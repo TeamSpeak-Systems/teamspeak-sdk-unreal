@@ -15,7 +15,14 @@ void UTeamSpeakFunctionLibrary::printMessageDebug(FString str) {
 }
 
 FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
-	return FPaths::GamePluginsDir() + "TeamSpeak_SDK/ThirdParty/TeamSpeak_lib/";
+#ifdef TS_X64
+	return FPaths::GamePluginsDir() + "TeamSpeak_SDK/ThirdParty/bin/windows/win64/";
+#elif defined TS_86
+    return FPaths::GamePluginsDir() + "TeamSpeak_SDK/ThirdParty/bin/windows/win32/";
+#else
+    printMessageDebug("invalid editor architecture");
+    return "";
+#endif
 }
 
 UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary() {

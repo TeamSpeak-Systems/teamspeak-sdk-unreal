@@ -46,12 +46,14 @@ public class TeamSpeak_SDK : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64) {
 			isLibrarySupported = true;
 
-			arch = "win64";
+            Definitions.Add("TS_X64");
+            arch = "win64";
 
 		} else if (Target.Platform == UnrealTargetPlatform.Win32) {
 			isLibrarySupported = true;
 
-			arch = "win32";
+            Definitions.Add("TS_X86");
+            arch = "win32";
 
 		}
         
