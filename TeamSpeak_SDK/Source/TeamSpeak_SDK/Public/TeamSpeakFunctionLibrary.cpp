@@ -1,6 +1,7 @@
+#include "TeamSpeakFunctionLibrary.h"
 #include "TeamSpeak_SDK.h"
 #include "TeamSpeak_Manager.h"
-#include "TeamSpeakFunctionLibrary.h"
+#include "IPluginManager.h"
 
 UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::utsFL = nullptr;
 TSharedPtr<TeamSpeak_Manager> UTeamSpeakFunctionLibrary::ts_Manager = MakeShareable(new TeamSpeak_Manager);
@@ -15,10 +16,11 @@ void UTeamSpeakFunctionLibrary::printMessageDebug(FString str) {
 }
 
 FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
-#ifdef TS_X64
-	return FPaths::GamePluginsDir() + "TeamSpeak_SDK/ThirdParty/bin/windows/win64/";
-#elif defined TS_86
-    return FPaths::GamePluginsDir() + "TeamSpeak_SDK/ThirdParty/bin/windows/win32/";
+#if PLATFORM_WINDOWS
+	FString BaseDir = IPluginManager::Get().FindPlugin("TeamSpeak_SDK")->GetBaseDir();
+	const FString SDKDir = FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("windows"));
+	const FString LibDir = FPaths::Combine(*SDKDir, FString(FPlatformProcess::GetBinariesSubdirectory()).ToLower());
+	return LibDir;
 #else
     printMessageDebug("invalid editor architecture");
     return "";
@@ -29,8 +31,7 @@ UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibra
     return utsFL;
 }
 
-TeamSpeak_Manager* UTeamSpeakFunctionLibrary::get_teampspeak_manager_ptr()
-{
+TeamSpeak_Manager* UTeamSpeakFunctionLibrary::get_teampspeak_manager_ptr() {
     return ts_Manager.Get();
 }
 
@@ -570,8 +571,7 @@ void UTeamSpeakFunctionLibrary::TeamSpeak_requestServerVariables(int32 serverCon
     error = handler.getErrorCode();
 }
 
-void UTeamSpeakFunctionLibrary::TeamSpeak_break_all_bindings()
-{
+void UTeamSpeakFunctionLibrary::TeamSpeak_break_all_bindings() {
 	auto&& ts_fl = UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary();
 
 	ts_fl->onConnectStatusChangeEvent.Clear();

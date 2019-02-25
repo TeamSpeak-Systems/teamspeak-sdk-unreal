@@ -1,5 +1,5 @@
-#include "TeamSpeak_SDK.h"
 #include "TeamSpeak_Manager.h"
+#include "TeamSpeak_SDK.h"
 #include "TeamSpeakFunctionLibrary.h"
 
 #include <teamspeak/clientlib.h>
@@ -9,8 +9,7 @@
 
 #include <codecvt>
 
-FString utf8_to_fstring(const char* data)
-{
+FString utf8_to_fstring(const char* data) {
     if (!data)
         return FString();
 
@@ -18,8 +17,7 @@ FString utf8_to_fstring(const char* data)
     return conv.from_bytes(data).data();
 }
 
-std::string fstring_to_utf8(const TCHAR* value)
-{
+std::string fstring_to_utf8(const TCHAR* value) {
     if (!value)
         return std::string();
 
@@ -33,8 +31,7 @@ std::string fstring_to_utf8(const TCHAR* value)
 #define TS_UTF8_TO_TCHAR(X) \
     utf8_to_fstring(X)
 
-TeamSpeak_Manager* TeamSpeak_Manager::get_instance()
-{
+TeamSpeak_Manager* TeamSpeak_Manager::get_instance() {
     return UTeamSpeakFunctionLibrary::get_teampspeak_manager_ptr();
 }
 
@@ -92,8 +89,7 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32
     return UE_TS3_SDK_initClientLib(usedLogTypes, logFileFolder, resourcesFolder, funcs);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const ClientUIFunctions& funcs)
-{
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const ClientUIFunctions& funcs) {
     unsigned int error;
     if ((error = ts3client_initClientLib(&funcs, NULL, usedLogTypes, TS_TCHAR_TO_UTF8(*logFileFolder), TS_TCHAR_TO_UTF8(*resourcesFolder))) != ERROR_ok) {
         return FTeamSpeak_valueHandler<void*>(NULL, error);
@@ -935,10 +931,8 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelIDFromCha
 	uint64 result;
 
     TArray<char*> wr_channel_name;
-    if (channelNameArray.Num() > 0)
-    {
-        for (auto&& ch : channelNameArray)
-        {
+    if (channelNameArray.Num() > 0) {
+        for (auto&& ch : channelNameArray) {
             auto&& conv_string = fstring_to_utf8(ch.GetCharArray().GetData());
             size_t count = conv_string.size() + 1;
             auto&& copy = new char[count];
@@ -961,8 +955,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelIDFromCha
 		return FTeamSpeak_valueHandler<int32>(NULL, error);
 	}
 
-    for (auto&& entry : wr_channel_name)
-    {
+    for (auto&& entry : wr_channel_name) {
         delete[] entry;
     }
 	return FTeamSpeak_valueHandler<int32>(result, error);
@@ -1265,10 +1258,8 @@ void TeamSpeak_Manager::onClientPasswordEncrypt(uint64 serverConnectionHandlerID
 }
 
 #include <string>
-namespace converting_helper
-{
-    TArray<FTeamSpeak_2dArray> conv_charppp_to_2d_array(char*** in)
-    {
+namespace converting_helper {
+    TArray<FTeamSpeak_2dArray> conv_charppp_to_2d_array(char*** in) {
         auto kIn = in;
         TArray<FTeamSpeak_2dArray> out;
         for (int i = 0; *in; ++i) {
@@ -1283,8 +1274,7 @@ namespace converting_helper
         return out;
     }
 
-    TArray<FString> conv_charpp_to_array_fstring(char** kIn)
-    {
+    TArray<FString> conv_charpp_to_array_fstring(char** kIn) {
         auto in = kIn;
         TArray<FString> out;
         for (int i = 0; *in; ++i) {
@@ -1293,8 +1283,7 @@ namespace converting_helper
         return out;
     }
 
-    TArray<FString> conv_uint64p_to_array_fstring(const uint64* kIn)
-    {
+    TArray<FString> conv_uint64p_to_array_fstring(const uint64* kIn) {
         auto in = kIn;
         TArray<FString> out;
         for (int i = 0; in[i]; ++i) {

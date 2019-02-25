@@ -4,100 +4,80 @@ using UnrealBuildTool;
 
 public class TeamSpeak_SDK : ModuleRules
 {
-	public TeamSpeak_SDK(TargetInfo Target)
-	{		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+	public TeamSpeak_SDK(ReadOnlyTargetRules Target) : base(Target)
+	{
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+        string BaseDirectory = Path.GetFullPath(System.IO.Path.Combine(ModuleDirectory, "..", ".."));
+        string SDKDirectory = Path.Combine(BaseDirectory, "ThirdParty");
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
-		// if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
-		// {
-		//		if (UEBuildConfiguration.bCompileSteamOSS == true)
-		//		{
-		//			DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
-		//		}
-		// }
-        LoadTeamSpeakLib(Target);
-	}
+        PublicIncludePaths.AddRange(
+            new string[] {
+                Path.Combine(ModuleDirectory, "Public"),
+                Path.Combine(SDKDirectory, "include")
+				// ... add public include paths required here ...
+			}
+        );
 
-    private string ModulePath
-    {
-        get { return ModuleDirectory; }
-    }
 
-    private string ThirdPartyPath
-    {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "../../ThirdParty/")); }
-    }    
- 
-    public bool LoadTeamSpeakLib(TargetInfo Target) {
-        bool isLibrarySupported = false;
+        PrivateIncludePaths.AddRange(
+            new string[] {
+                // Path.Combine(ModuleDirectory, "Private")
+				// ... add other private include paths required here ...
+			}
+        );
 
-		const string ts3clientlib = "ts3client.lib";
-		const string ts3clientdll = "ts3client.dll";
+        PublicDependencyModuleNames.AddRange(
+            new string[] {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "Projects"
+                // ... add other public dependencies that you statically link with here ...
+            }
+        );
 
-		string arch = null;
+		PrivateDependencyModuleNames.AddRange(
+            new string[] 
+            {
+                // ... add private dependencies that you statically link with here ...	
+            }
+        );
 
-		if (Target.Platform == UnrealTargetPlatform.Win64) {
-			isLibrarySupported = true;
+        bool bHasTeamspeakSDK = System.IO.Directory.Exists(SDKDirectory);
 
-            Definitions.Add("TS_X64");
-            arch = "win64";
+        if (bHasTeamspeakSDK) {
+            PublicDefinitions.Add("WITH_TEAMSPEAK=1");
+            if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32) {
+                // Add the import library
+                string LibDirectory = Path.Combine(SDKDirectory, "lib");
+                string platform = Target.Platform == UnrealTargetPlatform.Win32 ? "win32" : "win64";
+                
+                PublicLibraryPaths.Add(LibDirectory);
+                PublicAdditionalLibraries.Add(Path.Combine("windows", platform, "ts3client.lib"));
 
-		} else if (Target.Platform == UnrealTargetPlatform.Win32) {
-			isLibrarySupported = true;
-
-            Definitions.Add("TS_X86");
-            arch = "win32";
-
-		}
-        
-        if(isLibrarySupported) {
-			var LibrariesPath = Path.Combine(ThirdPartyPath, "lib", "windows", arch);
-			var path = CopyToBinaries(Path.Combine(ThirdPartyPath, "bin", "windows", arch, ts3clientdll), Target);
-			var dllPath = new RuntimeDependency(path);
-
-			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, ts3clientlib));
-			RuntimeDependencies.Add(dllPath);
-			PublicIncludePaths.Add(Path.Combine(ThirdPartyPath, "include"));
-			
-			Definitions.Add(string.Format( "WITH_BOBS_MAGIC_BINDING={0}", isLibrarySupported ? 1 : 0 ) );
- 
-			Definitions.Add("TS_MODULE_INTERNAL");
- 
-			PublicIncludePaths.Add(Path.Combine(GetUProjectPath(), "Plugins"));
-			PublicIncludePaths.Add(Path.Combine(GetUProjectPath(), "Plugins/TeamSpeak_SDK/Source/TeamSpeak_SDK/Public"));
+                // Delay-load the DLL, so we can load it from the right place first
+                PublicDelayLoadDLLs.Add("ts3client.dll");
+                string SDKLibWindows = System.IO.Path.Combine(LibDirectory, "windows", platform,"ts3client.dll");
+                RuntimeDependencies.Add(SDKLibWindows);
+            }
+        } else {
+            PublicDefinitions.Add("WITH_TEAMSPEAK=0");
         }
-		
-        return isLibrarySupported;
-    }
 
-    public string GetUProjectPath()
-    {
-        return Directory.GetParent(ModulePath).Parent.FullName;
-    }
-    public string GetGameDir()
-    {
-        return Directory.GetParent(ModulePath).Parent.Parent.Parent.FullName;
-    }
 
-    private string CopyToBinaries(string Filepath, TargetInfo Target)
-    {
-        string binariesDir = Path.Combine(GetGameDir(), "Binaries", Target.Platform.ToString());
-        string filename = Path.GetFileName(Filepath);
+        // Uncomment if you are using Slate UI
+        // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
-        if (!Directory.Exists(binariesDir))
-            Directory.CreateDirectory(binariesDir);
-
-        string binPath = Path.Combine(binariesDir, filename);
-        if (!File.Exists(Path.Combine(binariesDir, filename)))
-            File.Copy(Filepath, binPath, true);
-
-        return binPath;
-    }
+        // Uncomment if you are using online features
+        // PrivateDependencyModuleNames.Add("OnlineSubsystem");
+        // if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
+        // {
+        //		if (UEBuildConfiguration.bCompileSteamOSS == true)
+        //		{
+        //			DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
+        //		}
+        // }
+	}
 }

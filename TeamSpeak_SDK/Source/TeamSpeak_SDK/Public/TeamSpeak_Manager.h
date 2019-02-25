@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef TS_MODULE_INTERNAL
+#if WITH_TEAMSPEAK
 #   define TS_EXPORT   __declspec(dllexport)
 #else
 #   define TS_EXPORT   __declspec(dllimport)
