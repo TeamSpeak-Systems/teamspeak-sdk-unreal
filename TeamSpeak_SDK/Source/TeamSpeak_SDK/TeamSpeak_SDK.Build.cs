@@ -1,6 +1,7 @@
-
 using System.IO;
 using UnrealBuildTool;
+
+using System;
 
 public class TeamSpeak_SDK : ModuleRules
 {
@@ -51,16 +52,26 @@ public class TeamSpeak_SDK : ModuleRules
             PublicDefinitions.Add("WITH_TEAMSPEAK=1");
             if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32) {
                 // Add the import library
-                string LibDirectory = Path.Combine(SDKDirectory, "lib");
                 string platform = Target.Platform == UnrealTargetPlatform.Win32 ? "win32" : "win64";
-                
-                PublicLibraryPaths.Add(LibDirectory);
-                PublicAdditionalLibraries.Add(Path.Combine("windows", platform, "ts3client.lib"));
+                string LibDirectory = Path.Combine(SDKDirectory, "lib", "windows", platform);
 
-                // Delay-load the DLL, so we can load it from the right place first
-                PublicDelayLoadDLLs.Add("ts3client.dll");
-                string SDKLibWindows = System.IO.Path.Combine(LibDirectory, "windows", platform,"ts3client.dll");
-                RuntimeDependencies.Add(SDKLibWindows);
+                PublicLibraryPaths.Add(LibDirectory);
+                PublicAdditionalLibraries.Add("ts3client.lib");
+
+                string SDKLibWindows = Path.Combine(SDKDirectory, "bin", "windows", platform, "ts3client.dll");
+
+                string binariesDir = Path.Combine(BaseDirectory, "Binaries", Target.Platform.ToString());
+                string filename = "ts3client.dll";
+
+                if (!Directory.Exists(binariesDir))
+                    Directory.CreateDirectory(binariesDir);
+
+                string binPath = Path.Combine(binariesDir, filename);
+                if (!File.Exists(Path.Combine(binariesDir, filename)))
+                    File.Copy(SDKLibWindows, binPath, true);
+
+                RuntimeDependencies.Add(binPath);
+
             }
         } else {
             PublicDefinitions.Add("WITH_TEAMSPEAK=0");
