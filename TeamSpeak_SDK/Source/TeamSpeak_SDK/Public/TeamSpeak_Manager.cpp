@@ -13,16 +13,14 @@ FString utf8_to_fstring(const char* data) {
     if (!data)
         return FString();
 
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
-    return conv.from_bytes(data).data();
+    return UTF8_TO_TCHAR(data);
 }
 
 std::string fstring_to_utf8(const TCHAR* value) {
     if (!value)
         return std::string();
 
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
-    return conv.to_bytes(value);
+    return TCHAR_TO_UTF8(value);
 }
 
 #define TS_TCHAR_TO_UTF8(X) \
@@ -120,7 +118,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientLibVersion
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getClientLibVersionNumber(&result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -129,7 +127,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_spawnNewServerConne
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_spawnNewServerConnectionHandler(port, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -713,7 +711,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_requestSlotsFromPro
 	unsigned int error;
 	uint64 requestHandle;
 	if ((error = ts3client_requestSlotsFromProvisioningServer(TS_TCHAR_TO_UTF8(*ip), port, TS_TCHAR_TO_UTF8(*serverPassword), slots, TS_TCHAR_TO_UTF8(*identity), TS_TCHAR_TO_UTF8(*region), &requestHandle)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(requestHandle, error);
 }
@@ -732,7 +730,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientID(uint64 
 	unsigned int error;
 	anyID result;
 	if ((error = ts3client_getClientID(serverConnectionHandlerID, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -741,7 +739,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getConnectionStatus
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getConnectionStatus(serverConnectionHandlerID, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -750,7 +748,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getConnectionVariab
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getConnectionVariableAsUInt64(serverConnectionHandlerID, clientID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -759,7 +757,7 @@ FTeamSpeak_valueHandler<float> TeamSpeak_Manager::UE_TS3_SDK_getConnectionVariab
 	unsigned int error;
 	double result;
 	if ((error = ts3client_getConnectionVariableAsDouble(serverConnectionHandlerID, clientID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<float>(NULL, error);
+		return FTeamSpeak_valueHandler<float>(.0f, error);
 	}
 	return FTeamSpeak_valueHandler<float>(result, error);
 }
@@ -791,7 +789,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getServerConnection
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getServerConnectionVariableAsUInt64(serverConnectionHandlerID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -810,7 +808,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientSelfVariab
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getClientSelfVariableAsInt(serverConnectionHandlerID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -848,7 +846,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientVariableAs
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getClientVariableAsInt(serverConnectionHandlerID, clientID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -857,7 +855,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientVariableAs
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getClientVariableAsUInt64(serverConnectionHandlerID, clientID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -880,7 +878,7 @@ FTeamSpeak_valueHandler<TArray<int32>> TeamSpeak_Manager::UE_TS3_SDK_getClientLi
 		return FTeamSpeak_valueHandler<TArray<int32>>(TArray<int32>(), error);
 	}
 	TArray<uint32> buffer;
-	for (int i = 0; result[i] != NULL; ++i) {
+	for (int i = 0; result[i] != 0; ++i) {
 		buffer.Insert(result[i], i);
 	}
 	ts3client_freeMemory(result);
@@ -891,7 +889,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelOfClient(
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getChannelOfClient(serverConnectionHandlerID, clientID, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -900,7 +898,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelVariableA
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getChannelVariableAsInt(serverConnectionHandlerID, channelID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -909,7 +907,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelVariableA
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getChannelVariableAsUInt64(serverConnectionHandlerID, channelID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -952,7 +950,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelIDFromCha
     }
 
 	if ((error = ts3client_getChannelIDFromChannelNames(serverConnectionHandlerID, wr_channel_name.GetData(), &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 
     for (auto&& entry : wr_channel_name) {
@@ -998,7 +996,7 @@ FTeamSpeak_valueHandler<TArray<int32>> TeamSpeak_Manager::UE_TS3_SDK_getChannelL
 		return FTeamSpeak_valueHandler<TArray<int32>>(TArray<int32>(), error);
 	}
 	TArray<uint64> buffer;
-	for (int i = 0; result[i] != NULL; ++i) {
+	for (int i = 0; result[i] != 0; ++i) {
 		buffer.Insert(result[i], i);
 	}
 	ts3client_freeMemory(result);
@@ -1012,7 +1010,7 @@ FTeamSpeak_valueHandler<TArray<int32>> TeamSpeak_Manager::UE_TS3_SDK_getChannelC
 		return FTeamSpeak_valueHandler<TArray<int32>>(TArray<int32>(), error);
 	}
 	TArray<uint64> buffer;
-	for (int i = 0; result[i] != NULL; ++i) {
+	for (int i = 0; result[i] != 0; ++i) {
 		buffer.Insert(result[i], i);
 	}
 	ts3client_freeMemory(result);
@@ -1023,7 +1021,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getParentChannelOfC
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getParentChannelOfChannel(serverConnectionHandlerID, channelID, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -1032,7 +1030,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelEmptySecs
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getChannelEmptySecs(serverConnectionHandlerID, channelID, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -1055,7 +1053,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getServerVariableAs
 	unsigned int error;
 	int result;
 	if ((error = ts3client_getServerVariableAsInt(serverConnectionHandlerID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }
@@ -1064,7 +1062,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getServerVariableAs
 	unsigned int error;
 	uint64 result;
 	if ((error = ts3client_getServerVariableAsUInt64(serverConnectionHandlerID, flag, &result)) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<int32>(NULL, error);
+		return FTeamSpeak_valueHandler<int32>(0, error);
 	}
 	return FTeamSpeak_valueHandler<int32>(result, error);
 }

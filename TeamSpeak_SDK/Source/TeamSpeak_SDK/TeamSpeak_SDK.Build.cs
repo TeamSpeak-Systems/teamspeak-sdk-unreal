@@ -16,15 +16,6 @@ public class TeamSpeak_SDK : ModuleRules
             new string[] {
                 Path.Combine(ModuleDirectory, "Public"),
                 Path.Combine(SDKDirectory, "include")
-				// ... add public include paths required here ...
-			}
-        );
-
-
-        PrivateIncludePaths.AddRange(
-            new string[] {
-                // Path.Combine(ModuleDirectory, "Private")
-				// ... add other private include paths required here ...
 			}
         );
 
@@ -35,14 +26,6 @@ public class TeamSpeak_SDK : ModuleRules
                 "Engine",
                 "InputCore",
                 "Projects"
-                // ... add other public dependencies that you statically link with here ...
-            }
-        );
-
-		PrivateDependencyModuleNames.AddRange(
-            new string[] 
-            {
-                // ... add private dependencies that you statically link with here ...	
             }
         );
 
@@ -71,24 +54,23 @@ public class TeamSpeak_SDK : ModuleRules
                     File.Copy(SDKLibWindows, binPath, true);
 
                 RuntimeDependencies.Add(binPath);
+            } else if (Target.Platform == UnrealTargetPlatform.Linux) {
+                string binariesDir = Path.Combine(BaseDirectory, "Binaries", Target.Platform.ToString());
+                string filename = "libts3client.so";
+                string binPath = Path.Combine(binariesDir, filename);
+                string SDKLibLinux = Path.Combine(SDKDirectory, "bin", "linux", "amd64", filename);
 
+                if (!Directory.Exists(binariesDir))
+                    Directory.CreateDirectory(binariesDir);
+
+                if (!File.Exists(Path.Combine(binPath)))
+                    File.Copy(SDKLibLinux, binPath, true);
+
+                RuntimeDependencies.Add(binPath);
+                PublicAdditionalLibraries.Add(Path.Combine(SDKDirectory, "bin", "linux", "amd64", "libts3client.so"));
             }
         } else {
             PublicDefinitions.Add("WITH_TEAMSPEAK=0");
         }
-
-
-        // Uncomment if you are using Slate UI
-        // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-
-        // Uncomment if you are using online features
-        // PrivateDependencyModuleNames.Add("OnlineSubsystem");
-        // if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
-        // {
-        //		if (UEBuildConfiguration.bCompileSteamOSS == true)
-        //		{
-        //			DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
-        //		}
-        // }
 	}
 }

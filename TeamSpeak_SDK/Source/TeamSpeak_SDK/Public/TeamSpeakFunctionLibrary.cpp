@@ -16,11 +16,13 @@ void UTeamSpeakFunctionLibrary::printMessageDebug(FString str) {
 }
 
 FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
-#if PLATFORM_WINDOWS
 	FString BaseDir = IPluginManager::Get().FindPlugin("TeamSpeak_SDK")->GetBaseDir();
+#if PLATFORM_WINDOWS
 	const FString SDKDir = FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("windows"));
 	const FString LibDir = FPaths::Combine(*SDKDir, FString(FPlatformProcess::GetBinariesSubdirectory()).ToLower());
 	return LibDir;
+#elif PLATFORM_LINUX
+	return FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("linux"), TEXT("amd64"));
 #else
     printMessageDebug("invalid editor architecture");
     return "";
