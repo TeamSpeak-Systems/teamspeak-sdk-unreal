@@ -9,6 +9,7 @@ path:
 
 deploy:
   list:
-    - "/bin"
-    - "/lib"
+    - "/bin/linux/amd64"
+    - "/bin/windows"
+    - "/lib/windows"
     - "/include"
