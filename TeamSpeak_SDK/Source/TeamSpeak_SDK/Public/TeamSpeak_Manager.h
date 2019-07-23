@@ -2,12 +2,15 @@
 
 #ifdef __clang__
     #define TS_EXPORT __attribute__((visibility("default")))
-#elif defined __WIN32
+#elif defined _WIN32
     #if WITH_TEAMSPEAK
 	#define TS_EXPORT   __declspec(dllexport)
 	#else
 	#define TS_EXPORT   __declspec(dllimport)
 	#endif
+#else
+    #define TS_EXPORT
+    static_assert(false, "Platform not supported");
 #endif
 
 struct FTeamSpeak_2dArray;
