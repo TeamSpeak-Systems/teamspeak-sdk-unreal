@@ -1,7 +1,7 @@
 #include "TeamSpeakFunctionLibrary.h"
 #include "TeamSpeak_SDK.h"
 #include "TeamSpeak_Manager.h"
-#include "IPluginManager.h"
+#include "Interfaces/IPluginManager.h"
 
 UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::utsFL = nullptr;
 TSharedPtr<TeamSpeak_Manager> UTeamSpeakFunctionLibrary::ts_Manager = MakeShareable(new TeamSpeak_Manager);

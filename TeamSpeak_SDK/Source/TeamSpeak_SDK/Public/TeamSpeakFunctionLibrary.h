@@ -31,7 +31,8 @@ enum class  ETeamSpeak_CodecEncryptionMode : uint8 {
 
 UENUM(BlueprintType)
 enum class ETeamSpeak_TextMessageTargetMode : uint8 {
-	TextMessageTarget_CLIENT = 1,
+	TextMessageTarget_INVALID = 0,
+	TextMessageTarget_CLIENT,
 	TextMessageTarget_CHANNEL,
 	TextMessageTarget_SERVER,
 	TextMessageTarget_MAX
@@ -199,6 +200,7 @@ enum class ETeamSpeak_MonoSoundDestination : uint8 {
 
 UENUM(BlueprintType)
 enum class ETeamSpeak_SecuritySaltOptions : uint8 {
+	SECURITY_SALT_CHECK_INVALID = 0,
 	SECURITY_SALT_CHECK_NICKNAME = 1, /* put nickname into security hash */
 	SECURITY_SALT_CHECK_META_DATA = 2  /* put (game)meta data into security hash */
 };
