@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #ifdef __clang__
     #define TS_EXPORT __attribute__((visibility("default")))
 #elif defined _WIN32

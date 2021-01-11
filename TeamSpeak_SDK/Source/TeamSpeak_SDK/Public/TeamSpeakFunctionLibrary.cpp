@@ -141,11 +141,17 @@ void UTeamSpeakFunctionLibrary::TeamSpeak_openCaptureDevice(int32 serverConnecti
     error = handler.getErrorCode();
 }
 
-FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentPlaybackDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefualt) {
+FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentPlaybackDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault)
+{
 	auto handler = ts_Manager->UE_TS3_SDK_getCurrentPlaybackDeviceName(serverConnectionHandlerID);
     error = handler.getErrorCode();
-	isDefualt = FCString::Atoi(*handler.getValue().Last());
-	return handler.getValue().Pop();
+	if (!error)
+	{
+		auto value = handler.getValue();
+		isDefault = FCString::Atoi(*value[1]);
+		return value[0];
+	}
+	return {};
 }
 
 FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentPlayBackMode(int32 serverConnectionHandlerID, int32 &error) {
@@ -154,11 +160,17 @@ FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentPlayBackMode(int32 server
 	return handler.getValue();
 }
 
-FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentCaptureDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault) {
+FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentCaptureDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault)
+{
 	auto handler = ts_Manager->UE_TS3_SDK_getCurrentCaptureDeviceName(serverConnectionHandlerID);
-    error = handler.getErrorCode();
-	isDefault = FCString::Atoi(*handler.getValue().Last());
-	return handler.getValue().Pop();
+	error = handler.getErrorCode();
+	if (!error)
+	{
+		auto value = handler.getValue();
+		isDefault = FCString::Atoi(*value[1]);
+		return value[0];
+	}
+	return {};
 }
 
 FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentCaptureMode(int32 serverConnectionHandlerID, int32 &error) {

@@ -8,6 +8,7 @@
 #include <teamspeak/public_errors.h>
 
 #include <codecvt>
+#include <string>
 
 FString utf8_to_fstring(const char* data) {
     if (!data)
@@ -279,9 +280,7 @@ FTeamSpeak_valueHandler<TArray<FString>> TeamSpeak_Manager::UE_TS3_SDK_getCurren
 	}
     FString copy(result);
 	ts3client_freeMemory(result);
-	TArray<FString> buffer;
-	buffer.Insert(copy, 0);
-	buffer.Insert(FString::FromInt(isDefault), 1);
+	auto buffer = TArray<FString>{ copy, FString::FromInt(isDefault) };
 	return FTeamSpeak_valueHandler<TArray<FString>>(buffer, error);
 }
 
@@ -1089,173 +1088,355 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestServerVariab
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void TeamSpeak_Manager::onConnectStatusChangeEvent(uint64 serverConnectionHandlerID, int newStatus, unsigned int errorNumber) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onConnectStatusChangeEvent.Broadcast(serverConnectionHandlerID, static_cast<EConnectStatus>(newStatus), errorNumber);
+void TeamSpeak_Manager::onConnectStatusChangeEvent(uint64 serverConnectionHandlerID, int newStatus, unsigned int errorNumber)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onConnectStatusChangeEvent.Broadcast(serverConnectionHandlerID, static_cast<EConnectStatus>(newStatus), errorNumber);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerProtocolVersionEvent(uint64 serverConnectionHandlerID, int protocolVersion) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerProtocolVersionEvent.Broadcast(serverConnectionHandlerID, protocolVersion);
+void TeamSpeak_Manager::onServerProtocolVersionEvent(uint64 serverConnectionHandlerID, int protocolVersion)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerProtocolVersionEvent.Broadcast(serverConnectionHandlerID, protocolVersion);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onNewChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 channelParentID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onNewChannelEvent.Broadcast(serverConnectionHandlerID, channelID, channelParentID);
+void TeamSpeak_Manager::onNewChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 channelParentID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onNewChannelEvent.Broadcast(serverConnectionHandlerID, channelID, channelParentID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onNewChannelCreatedEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 channelParentID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onNewChannelCreatedEvent.Broadcast(serverConnectionHandlerID, channelID, channelParentID, invokerID, TS_UTF8_TO_TCHAR(invokerName), TS_UTF8_TO_TCHAR(invokerUniqueIdentifier));
+void TeamSpeak_Manager::onNewChannelCreatedEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 channelParentID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(invokerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(invokerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onNewChannelCreatedEvent.Broadcast(serverConnectionHandlerID, channelID, channelParentID, invokerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onDelChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onDelChannelEvent.Broadcast(serverConnectionHandlerID, channelID, invokerID, TS_UTF8_TO_TCHAR(invokerName), TS_UTF8_TO_TCHAR(invokerUniqueIdentifier));
+void TeamSpeak_Manager::onDelChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(invokerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(invokerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onDelChannelEvent.Broadcast(serverConnectionHandlerID, channelID, invokerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelMoveEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 newChannelParentID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelMoveEvent.Broadcast(serverConnectionHandlerID, channelID, newChannelParentID, invokerID, TS_UTF8_TO_TCHAR(invokerName), TS_UTF8_TO_TCHAR(invokerUniqueIdentifier));
+void TeamSpeak_Manager::onChannelMoveEvent(uint64 serverConnectionHandlerID, uint64 channelID, uint64 newChannelParentID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(invokerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(invokerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelMoveEvent.Broadcast(serverConnectionHandlerID, channelID, newChannelParentID, invokerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onUpdateChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateChannelEvent.Broadcast(serverConnectionHandlerID, channelID);
+void TeamSpeak_Manager::onUpdateChannelEvent(uint64 serverConnectionHandlerID, uint64 channelID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateChannelEvent.Broadcast(serverConnectionHandlerID, channelID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onUpdateChannelEditedEvent(uint64 serverConnectionHandlerID, uint64 channelID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateChannelEditedEvent.Broadcast(serverConnectionHandlerID, channelID, invokerID, TS_UTF8_TO_TCHAR(invokerName), TS_UTF8_TO_TCHAR(invokerUniqueIdentifier));
+void TeamSpeak_Manager::onUpdateChannelEditedEvent(uint64 serverConnectionHandlerID, uint64 channelID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(invokerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(invokerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateChannelEditedEvent.Broadcast(serverConnectionHandlerID, channelID, invokerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onUpdateClientEvent(uint64 serverConnectionHandlerID, anyID clientID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateClientEvent.Broadcast(serverConnectionHandlerID, clientID, invokerID, TS_UTF8_TO_TCHAR(invokerName), TS_UTF8_TO_TCHAR(invokerUniqueIdentifier));
+void TeamSpeak_Manager::onUpdateClientEvent(uint64 serverConnectionHandlerID, anyID clientID, anyID invokerID, const char* invokerName, const char* invokerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(invokerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(invokerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUpdateClientEvent.Broadcast(serverConnectionHandlerID, clientID, invokerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientMoveEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* moveMessage) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, TS_UTF8_TO_TCHAR(moveMessage));
+void TeamSpeak_Manager::onClientMoveEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* moveMessage)
+{
+	const auto msg = TS_UTF8_TO_TCHAR(moveMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientMoveSubscriptionEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveSubscriptionEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
+void TeamSpeak_Manager::onClientMoveSubscriptionEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveSubscriptionEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientMoveTimeoutEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* timeoutMessage) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveTimeoutEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, TS_UTF8_TO_TCHAR(timeoutMessage));
+void TeamSpeak_Manager::onClientMoveTimeoutEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* timeoutMessage)
+{
+	const auto msg = TS_UTF8_TO_TCHAR(timeoutMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveTimeoutEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientMoveMovedEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID moverID, const char* moverName, const char* moverUniqueIdentifier, const char* moveMessage) {
+void TeamSpeak_Manager::onClientMoveMovedEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID moverID, const char* moverName, const char* moverUniqueIdentifier, const char* moveMessage)
+{
 	TArray<FString> buffer;
 	buffer.Push(moverName);
 	buffer.Push(moverUniqueIdentifier);
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveMovedEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, moverID, buffer, TS_UTF8_TO_TCHAR(moveMessage));
+	const auto msg = TS_UTF8_TO_TCHAR(moveMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveMovedEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, moverID, buffer, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientKickFromChannelEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID kickerID, const char* kickerName, const char* kickerUniqueIdentifier, const char* kickMessage) {
+void TeamSpeak_Manager::onClientKickFromChannelEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID kickerID, const char* kickerName, const char* kickerUniqueIdentifier, const char* kickMessage)
+{
 	TArray<FString> buffer;
 	buffer.Push(kickerName);
 	buffer.Push(kickerUniqueIdentifier);
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientKickFromChannelEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, buffer, TS_UTF8_TO_TCHAR(kickMessage));
+	const auto msg = TS_UTF8_TO_TCHAR(kickMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientKickFromChannelEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, buffer, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
 void TeamSpeak_Manager::onClientKickFromServerEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID kickerID, const char* kickerName, const char* kickerUniqueIdentifier, const char* kickMessage) {
 	TArray<FString> buffer;
 	buffer.Push(kickerName);
 	buffer.Push(kickerUniqueIdentifier);
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientKickFromChannelEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, buffer, TS_UTF8_TO_TCHAR(kickMessage));
+	const auto msg = TS_UTF8_TO_TCHAR(kickMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientKickFromChannelEvent.Broadcast(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, buffer, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientIDsEvent(uint64 serverConnectionHandlerID, const char* uniqueClientIdentifier, anyID clientID, const char* clientName) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientIDsEvent.Broadcast(serverConnectionHandlerID, TS_UTF8_TO_TCHAR(uniqueClientIdentifier), clientID, TS_UTF8_TO_TCHAR(clientName));
+void TeamSpeak_Manager::onClientIDsEvent(uint64 serverConnectionHandlerID, const char* uniqueClientIdentifier, anyID clientID, const char* clientName)
+{
+	const auto client_uid = TS_UTF8_TO_TCHAR(uniqueClientIdentifier);
+	const auto client_name = TS_UTF8_TO_TCHAR(clientName);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientIDsEvent.Broadcast(serverConnectionHandlerID, client_uid, clientID, client_name);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientIDsFinishedEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientIDsFinishedEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onClientIDsFinishedEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientIDsFinishedEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerEditedEvent(uint64 serverConnectionHandlerID, anyID editerID, const char* editerName, const char* editerUniqueIdentifier) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerEditedEvent.Broadcast(serverConnectionHandlerID, editerID, TS_UTF8_TO_TCHAR(editerName), TS_UTF8_TO_TCHAR(editerUniqueIdentifier));
+void TeamSpeak_Manager::onServerEditedEvent(uint64 serverConnectionHandlerID, anyID editerID, const char* editerName, const char* editerUniqueIdentifier)
+{
+	const auto invoker_name = TS_UTF8_TO_TCHAR(editerName);
+	const auto invoker_uid = TS_UTF8_TO_TCHAR(editerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerEditedEvent.Broadcast(serverConnectionHandlerID, editerID, invoker_name, invoker_uid);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerUpdatedEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerUpdatedEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onServerUpdatedEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerUpdatedEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerErrorEvent(uint64 serverConnectionHandlerID, const char* errorMessage, unsigned int error, const char* returnCode, const char* extraMessage) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerErrorEvent.Broadcast(serverConnectionHandlerID, TS_UTF8_TO_TCHAR(errorMessage), error, TS_UTF8_TO_TCHAR(returnCode), TS_UTF8_TO_TCHAR(extraMessage));
+void TeamSpeak_Manager::onServerErrorEvent(uint64 serverConnectionHandlerID, const char* errorMessage, unsigned int error, const char* returnCode, const char* extraMessage)
+{
+	const auto error_msg = TS_UTF8_TO_TCHAR(errorMessage);
+	const auto return_code = TS_UTF8_TO_TCHAR(returnCode);
+	const auto extra_msg = TS_UTF8_TO_TCHAR(extraMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerErrorEvent.Broadcast(serverConnectionHandlerID, error_msg, error, return_code, extra_msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerStopEvent(uint64 serverConnectionHandlerID, const char* shutdownMessage) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerStopEvent.Broadcast(serverConnectionHandlerID, TS_UTF8_TO_TCHAR(shutdownMessage));
+void TeamSpeak_Manager::onServerStopEvent(uint64 serverConnectionHandlerID, const char* shutdownMessage)
+{
+	const auto msg = TS_UTF8_TO_TCHAR(shutdownMessage);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerStopEvent.Broadcast(serverConnectionHandlerID, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onTextMessageEvent(uint64 serverConnectionHandlerID, anyID targetMode, anyID toID, anyID fromID, const char* fromName, const char* fromUniqueIdentifier, const char* message) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onTextMessageEvent.Broadcast(serverConnectionHandlerID, targetMode, toID, fromID, TS_UTF8_TO_TCHAR(fromName), TS_UTF8_TO_TCHAR(fromUniqueIdentifier), TS_UTF8_TO_TCHAR(message));
+void TeamSpeak_Manager::onTextMessageEvent(uint64 serverConnectionHandlerID, anyID targetMode, anyID toID, anyID fromID, const char* fromName, const char* fromUniqueIdentifier, const char* message)
+{
+	const auto from_name = TS_UTF8_TO_TCHAR(fromName);
+	const auto from_uid = TS_UTF8_TO_TCHAR(fromUniqueIdentifier);
+	const auto msg = TS_UTF8_TO_TCHAR(message);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onTextMessageEvent.Broadcast(serverConnectionHandlerID, targetMode, toID, fromID, from_name, from_uid, msg);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onTalkStatusChangeEvent(uint64 serverConnectionHandlerID, int status, int isReceivedWhisper, anyID clientID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onTalkStatusChangeEvent.Broadcast(serverConnectionHandlerID, status, isReceivedWhisper, clientID);
+void TeamSpeak_Manager::onTalkStatusChangeEvent(uint64 serverConnectionHandlerID, int status, int isReceivedWhisper, anyID clientID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onTalkStatusChangeEvent.Broadcast(serverConnectionHandlerID, status, isReceivedWhisper, clientID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
 
-void TeamSpeak_Manager::onIgnoredWhisperEvent(uint64 serverConnectionHandlerID, anyID clientID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onIgnoredWhisperEvent.Broadcast(serverConnectionHandlerID, clientID);
+void TeamSpeak_Manager::onIgnoredWhisperEvent(uint64 serverConnectionHandlerID, anyID clientID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onIgnoredWhisperEvent.Broadcast(serverConnectionHandlerID, clientID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onConnectionInfoEvent(uint64 serverConnectionHandlerID, anyID clientID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onConnectionInfoEvent.Broadcast(serverConnectionHandlerID, clientID);
+void TeamSpeak_Manager::onConnectionInfoEvent(uint64 serverConnectionHandlerID, anyID clientID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onConnectionInfoEvent.Broadcast(serverConnectionHandlerID, clientID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onServerConnectionInfoEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerConnectionInfoEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onServerConnectionInfoEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onServerConnectionInfoEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelSubscribeEvent(uint64 serverConnectionHandlerID, uint64 channelID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelSubscribeEvent.Broadcast(serverConnectionHandlerID, channelID);
+void TeamSpeak_Manager::onChannelSubscribeEvent(uint64 serverConnectionHandlerID, uint64 channelID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelSubscribeEvent.Broadcast(serverConnectionHandlerID, channelID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelSubscribeFinishedEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelSubscribeFinishedEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onChannelSubscribeFinishedEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelSubscribeFinishedEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelUnsubscribeEvent(uint64 serverConnectionHandlerID, uint64 channelID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelUnsubscribeEvent.Broadcast(serverConnectionHandlerID, channelID);
+void TeamSpeak_Manager::onChannelUnsubscribeEvent(uint64 serverConnectionHandlerID, uint64 channelID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelUnsubscribeEvent.Broadcast(serverConnectionHandlerID, channelID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelUnsubscribeFinishedEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelUnsubscribeFinishedEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onChannelUnsubscribeFinishedEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelUnsubscribeFinishedEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelDescriptionUpdateEvent(uint64 serverConnectionHandlerID, uint64 channelID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelDescriptionUpdateEvent.Broadcast(serverConnectionHandlerID, channelID);
+void TeamSpeak_Manager::onChannelDescriptionUpdateEvent(uint64 serverConnectionHandlerID, uint64 channelID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelDescriptionUpdateEvent.Broadcast(serverConnectionHandlerID, channelID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onChannelPasswordChangedEvent(uint64 serverConnectionHandlerID, uint64 channelID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelPasswordChangedEvent.Broadcast(serverConnectionHandlerID, channelID);
+void TeamSpeak_Manager::onChannelPasswordChangedEvent(uint64 serverConnectionHandlerID, uint64 channelID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onChannelPasswordChangedEvent.Broadcast(serverConnectionHandlerID, channelID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onPlaybackShutdownCompleteEvent(uint64 serverConnectionHandlerID) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onPlaybackShutdownCompleteEvent.Broadcast(serverConnectionHandlerID);
+void TeamSpeak_Manager::onPlaybackShutdownCompleteEvent(uint64 serverConnectionHandlerID)
+{
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onPlaybackShutdownCompleteEvent.Broadcast(serverConnectionHandlerID);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onSoundDeviceListChangedEvent(const char* modeID, int playOrCap) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onSoundDeviceListChangedEvent.Broadcast(TS_UTF8_TO_TCHAR(modeID), playOrCap);
+void TeamSpeak_Manager::onSoundDeviceListChangedEvent(const char* modeID, int playOrCap)
+{
+	const auto mode = TS_UTF8_TO_TCHAR(modeID);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onSoundDeviceListChangedEvent.Broadcast(mode, playOrCap);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onUserLoggingMessageEvent(const char* logmessage, int logLevel, const char* logChannel, uint64 logID, const char* logTime, const char* completeLogString) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUserLoggingMessageEvent.Broadcast(TS_UTF8_TO_TCHAR(logmessage), logLevel, TS_UTF8_TO_TCHAR(logChannel), logID, TS_UTF8_TO_TCHAR(logTime), TS_UTF8_TO_TCHAR(completeLogString));
+void TeamSpeak_Manager::onUserLoggingMessageEvent(const char* logmessage, int logLevel, const char* logChannel, uint64 logID, const char* logTime, const char* completeLogString)
+{
+	const auto log_msg = TS_UTF8_TO_TCHAR(logmessage);
+	const auto log_channel = TS_UTF8_TO_TCHAR(logChannel);
+	const auto log_time = TS_UTF8_TO_TCHAR(logTime);
+	const auto complete_log_entry = TS_UTF8_TO_TCHAR(completeLogString);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onUserLoggingMessageEvent.Broadcast(log_msg, logLevel, log_channel, logID, log_time, complete_log_entry);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onProvisioningSlotRequestResultEvent(unsigned int error, uint64 requestHandle, const char* connectionKey) {
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onProvisioningSlotRequestResultEvent.Broadcast(error, requestHandle, TS_UTF8_TO_TCHAR(connectionKey));
+void TeamSpeak_Manager::onProvisioningSlotRequestResultEvent(unsigned int error, uint64 requestHandle, const char* connectionKey)
+{
+	const auto connection_key = TS_UTF8_TO_TCHAR(connectionKey);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onProvisioningSlotRequestResultEvent.Broadcast(error, requestHandle, connectionKey);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onCheckServerUniqueIdentifierEvent(uint64 serverConnectionHandlerID, const char* ServerUniqueIdentifier, int* cancelConnect) {
+void TeamSpeak_Manager::onCheckServerUniqueIdentifierEvent(uint64 serverConnectionHandlerID, const char* ServerUniqueIdentifier, int* cancelConnect)
+{
 	TArray<int32> buffer;
-	for (int i = 0; i < (sizeof(cancelConnect) / sizeof(int)); ++i) {
+	for (int i = 0; i < (sizeof(cancelConnect) / sizeof(int)); ++i)
+	{
 		buffer.Push(cancelConnect[i]);
 	}
-	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onCheckServerUniqueIdentifierEvent.Broadcast(serverConnectionHandlerID, TS_UTF8_TO_TCHAR(ServerUniqueIdentifier), buffer);
+	const auto server_uid = TS_UTF8_TO_TCHAR(ServerUniqueIdentifier);
+	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	{
+		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onCheckServerUniqueIdentifierEvent.Broadcast(serverConnectionHandlerID, server_uid, buffer);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
-void TeamSpeak_Manager::onClientPasswordEncrypt(uint64 serverConnectionHandlerID, const char* plaintext, char* encryptedText, int encryptedTextByteSize) {
+// TODO I don't think that's gonna work with blueprints anymore, given the game thread requirement
+void TeamSpeak_Manager::onClientPasswordEncrypt(uint64 serverConnectionHandlerID, const char* plaintext, char* encryptedText, int encryptedTextByteSize)
+{
 	UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientPasswordEncrypt.Broadcast(serverConnectionHandlerID, TS_UTF8_TO_TCHAR(plaintext), TS_UTF8_TO_TCHAR(encryptedText), encryptedTextByteSize);
 }
 
-#include <string>
 namespace converting_helper {
     TArray<FTeamSpeak_2dArray> conv_charppp_to_2d_array(char*** in) {
         auto kIn = in;
