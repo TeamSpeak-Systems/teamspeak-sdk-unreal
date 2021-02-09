@@ -5,11 +5,14 @@ using System;
 
 public class TeamSpeak_SDK : ModuleRules
 {
-	public TeamSpeak_SDK(ReadOnlyTargetRules Target) : base(Target)
+    public TeamSpeak_SDK(ReadOnlyTargetRules Target) : base(Target)
 	{
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        string BaseDirectory = Path.GetFullPath(System.IO.Path.Combine(ModuleDirectory, "..", ".."));
+        string BaseDirectory = System.IO.Path.GetFullPath(
+            System.IO.Path.Combine(ModuleDirectory, "..", "..")
+            );
+
         string SDKDirectory = Path.Combine(BaseDirectory, "ThirdParty");
 
         PublicIncludePaths.AddRange(

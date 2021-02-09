@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #ifdef __clang__
     #define TS_EXPORT __attribute__((visibility("default")))
 #elif defined _WIN32
@@ -15,10 +13,12 @@
     static_assert(false, "Platform not supported");
 #endif
 
+DECLARE_LOG_CATEGORY_EXTERN(LogTeamSpeak, Log, All);
+
 struct FTeamSpeak_2dArray;
 enum class ETeamSpeak_Error;
 
-using anyID = uint16_t;
+using anyID = uint16;
 
 template<typename T>
 struct TS_EXPORT FTeamSpeak_valueHandler {
@@ -44,8 +44,8 @@ struct TS_EXPORT FTeamSpeak_valueHandler {
 protected:
     FTeamSpeak_valueHandler() = delete;
 };
-
-typedef struct
+using OnTalkStatusChangeEventPtr = void(*)(uint64, int, int, anyID);
+typedef struct Custom_Function_Function_Pointer_Type
 {
 private:
     using OnEditPlaybackVoiceDataEventPtr = void(*)(uint64, anyID, short*, int, int);
@@ -55,13 +55,19 @@ private:
     using OnCustom3dRolloffCalculationClientEventPtr = void(*)(uint64, anyID, float, float*);
     using OnCustom3dRolloffCalculationWaveEventPtr = void(*)(uint64, uint64, float, float*);
 
+	using OnClientPasswordEncryptPtr = void(*)(uint64, const char*, char*, int);
+
 public:
+	// audio callbacks
     OnEditPlaybackVoiceDataEventPtr on_edit_playback_voice_data_ptr = nullptr;
     OnEditPostProcessVoiceDataEventPtr on_edit_post_process_voide_data_ptr = nullptr;
     OnEditMixedPlaybackVoiceDataEventPtr on_edit_mixed_playback_voide_data_ptr = nullptr;
     OnEditCapturedVoiceDataEventPtr on_edit_captured_voice_data_ptr = nullptr;
     OnCustom3dRolloffCalculationClientEventPtr on_custom_3d_rolloff_calc_client_ptr = nullptr;
     OnCustom3dRolloffCalculationWaveEventPtr on_custom_3d_rollof_calc_wave_ptr = nullptr;
+	OnTalkStatusChangeEventPtr on_talk_status_changed_ptr = nullptr;
+	// misc non-blueprintable callbacks
+	OnClientPasswordEncryptPtr on_client_password_encrypt = nullptr;
 } Custom_Function_Function_Pointer;
 
 class TS_EXPORT TeamSpeak_Manager {
@@ -73,6 +79,7 @@ public:
 
 	/*Construction and Destruction*/
     FTeamSpeak_valueHandler<void*> UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const Custom_Function_Function_Pointer* const custom_function_ptr = nullptr);
+	// Usage discouraged unless necessary.
     FTeamSpeak_valueHandler<void*> UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const struct ClientUIFunctions& callbacks);
 
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_destroyClientLib();
@@ -271,10 +278,18 @@ private:
 	static void onChannelPasswordChangedEvent           (uint64 serverConnectionHandlerID, uint64 channelID);
 	static void onPlaybackShutdownCompleteEvent         (uint64 serverConnectionHandlerID);
 	static void onSoundDeviceListChangedEvent           (const char* modeID, int playOrCap);
+	/*static void onEditPlaybackVoiceDataEvent			(uint64 serverConnectionHandlerID, anyID clientID, short* buffer, int frames, int channels);
+	static void onEditPostProcessVoiceDataEvent			(uint64 serverConnectionHandlerID, anyID clientID, short* buffer, int frames, int channels, const unsigned int* channelSpeakerArray, unsigned int* channelFillMask);
+	static void onEditMixedPlaybackVoiceDataEvent		(uint64 serverConnectionHandlerID, short* buffer, int frames, int channels, const unsigned int* channelSpeakerArray, unsigned int* channelFillMask);
+	static void onEditCapturedVoiceDataEvent			(uint64 serverConnectionHandlerID, short* buffer, int frames, int channels, int* flags);
+	static void onCustom3dRolloffCalculationClientEvent	(uint64 serverConnectionHandlerID, anyID clientID, float distance, float* volume);
+	static void onCustom3dRolloffCalculationWaveEvent	(uint64 serverConnectionHandlerID, uint64 waveHandle, float distance, float* volume);*/
 	static void onUserLoggingMessageEvent               (const char* logmessage, int logLevel, const char* logChannel, uint64 logID, const char* logTime, const char* completeLogString);
 	static void onProvisioningSlotRequestResultEvent    (unsigned int error, uint64 requestHandle, const char* connectionKey);
 	static void onCheckServerUniqueIdentifierEvent      (uint64 serverConnectionHandlerID, const char* ServerUniqueIdentifier, int* cancelConnect);
-	static void onClientPasswordEncrypt                 (uint64 serverConnectionHandlerID, const char* plaintext, char* encryptedText, int encryptedTextByteSize);
+	// static void onClientPasswordEncrypt                 (uint64 serverConnectionHandlerID, const char* plaintext, char* encryptedText, int encryptedTextByteSize);
+
+	OnTalkStatusChangeEventPtr m_on_talk_status_change_cbk = nullptr;
 };
 
 namespace converting_helper

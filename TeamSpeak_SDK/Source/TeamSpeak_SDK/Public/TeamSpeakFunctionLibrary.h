@@ -6,6 +6,13 @@
 class TeamSpeak_Manager;
 
 UENUM(BlueprintType)
+enum class ETeamSpeak_Visibility : uint8 {
+	ENTER = 0,
+	RETAIN,
+	LEAVE
+};
+
+UENUM(BlueprintType)
 enum class ETeamSpeak_TalkStatus : uint8 {
 	STATUS_NOT_TALKING = 0,
 	STATUS_TALKING = 1,
@@ -525,27 +532,27 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnUpdateClientEvent onUpdateClientEvent;
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FTeamSpeakOnClientMoveEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility, const FString&, moveMessage);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FTeamSpeakOnClientMoveEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility, const FString&, moveMessage);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientMoveEvent onClientMoveEvent;
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FTeamSpeakOnClientMoveSubscriptionEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FTeamSpeakOnClientMoveSubscriptionEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientMoveSubscriptionEvent onClientMoveSubscriptionEvent;
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FTeamSpeakOnClientMoveTimeoutEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility, const FString&, moveMessage);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FTeamSpeakOnClientMoveTimeoutEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility, const FString&, moveMessage);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientMoveTimeoutEvent onClientMoveTimeoutEvent;
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientMoveMovedEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility, int32, moverID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, moveMessage);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientMoveMovedEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility, int32, moverID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, moveMessage);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientMoveMovedEvent onClientMoveMovedEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientKickFromChannelEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility, int32, kickerID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, kickMessage);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientKickFromChannelEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility, int32, kickerID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, kickMessage);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientKickFromChannelEvent onClientKickFromChannelEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientKickFromServerEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, int32, visibility, int32, kickerID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, kickMessage);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FTeamSpeakOnClientKickFromServerEvent, int32, serverconnectionHandlerID, int32, clientID, int32, oldChannelID, int32, newChannelID, ETeamSpeak_Visibility, visibility, int32, kickerID, const TArray<FString>&, moverNameAndUniqueIdentifier, const FString&, kickMessage);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Client")
 	FTeamSpeakOnClientKickFromServerEvent onClientKickFromServerEvent;
 	
