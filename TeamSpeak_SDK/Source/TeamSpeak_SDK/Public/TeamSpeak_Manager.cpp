@@ -1,6 +1,7 @@
 #include "TeamSpeak_Manager.h"
 #include "TeamSpeak_SDK.h"
 #include "TeamSpeakFunctionLibrary.h"
+#include "TeamSpeak_Helpers.h"
 
 #include <teamspeak/clientlib.h>
 #include <teamspeak/clientlib_publicdefinitions.h>
@@ -10,19 +11,7 @@
 #include <codecvt>
 #include <string>
 
-FString utf8_to_fstring(const char* data) {
-    if (!data)
-        return FString();
-
-    return UTF8_TO_TCHAR(data);
-}
-
-std::string fstring_to_utf8(const TCHAR* value) {
-    if (!value)
-        return std::string();
-
-    return TCHAR_TO_UTF8(value);
-}
+using namespace com::teamspeak::helpers;
 
 #define TS_TCHAR_TO_UTF8(X) \
     fstring_to_utf8(X).data()
@@ -272,9 +261,59 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openPlaybackDevice(
 	return FTeamSpeak_valueHandler<void*>(NULL, error);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openCaptureDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice) {
-	unsigned int error;
-	error = ts3client_openCaptureDevice(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*modeID), TS_TCHAR_TO_UTF8(*captureDevice));
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openCaptureDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice)
+{
+	auto error = uint32{ ERROR_ok };
+
+	// ugly workaround for sdk 3.0.4.4
+	auto real_mode_id = modeID;
+	if (modeID.IsEmpty() && captureDevice.IsEmpty())
+	{
+		auto clientlib_version = uint64{ 0 };
+		ts3client_getClientLibVersionNumber(&clientlib_version);
+		if (clientlib_version <= 1527678360)
+		{
+			const auto default_mode_result = UE_TS3_SDK_getDefaultCaptureMode();
+			if (default_mode_result.errorCode == ERROR_ok)
+			{
+				auto&& default_mode = default_mode_result.value;
+				const auto custom = FString(TEXT("custom"));
+				if (custom == default_mode)
+				{
+					const auto result = UE_TS3_SDK_getCaptureModeList();
+					if (result.errorCode == ERROR_ok)
+					{
+						auto&& modes = result.value;
+						auto test = FString(TEXT("Windows Audio Session"));
+						if (modes.Contains(test))
+						{
+							real_mode_id = test;
+						}
+						else
+						{
+							test = FString(TEXT("PulseAudio"));
+							if (modes.Contains(test))
+							{
+								real_mode_id = test;
+							}
+						}
+						if (real_mode_id == modeID)
+						{
+							for (const auto& mode : modes)
+							{
+								if (custom != mode)
+								{
+									real_mode_id = mode;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	error = ts3client_openCaptureDevice(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*real_mode_id), TS_TCHAR_TO_UTF8(*captureDevice));
 	return FTeamSpeak_valueHandler<void*>(NULL, error);
 }
 
@@ -1442,14 +1481,14 @@ void TeamSpeak_Manager::onUserLoggingMessageEvent(const char* logmessage, int lo
 				UE_LOG(LogTeamSpeak, Warning, TEXT("%s"), *complete_log_entry);
 				break;
 			case LogLevel::LogLevel_DEBUG:
-				UE_LOG(LogTeamSpeak, Verbose, TEXT("%s"), *complete_log_entry);
+				UE_LOG(LogTeamSpeak, /*Verbose*/ Display, TEXT("%s"), *complete_log_entry);
 				break;
 			case LogLevel::LogLevel_INFO:
 				UE_LOG(LogTeamSpeak, Display, TEXT("%s"), *complete_log_entry);
 				break;
 			case LogLevel::LogLevel_DEVEL:
 			default:
-				UE_LOG(LogTeamSpeak, VeryVerbose, TEXT("%s"), *complete_log_entry);
+				UE_LOG(LogTeamSpeak, /*VeryVerbose*/ Display, TEXT("%s"), *complete_log_entry);
 				break;
 			}
 		}

@@ -27,6 +27,8 @@ public class TeamSpeak_SDK : ModuleRules
                 "Core",
                 "CoreUObject",
                 "Engine",
+                "AudioMixer",
+                "SignalProcessing",
                 "InputCore",
                 "Projects"
             }
