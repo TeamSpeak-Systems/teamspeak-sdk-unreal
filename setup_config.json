@@ -3,11 +3,6 @@
         "url": "files.teamspeak-services.com/releases/sdk/",
         "version": "3.0.4.4"
     },
-    "path": {
-        "temp_name": "temp",
-        "temp_file": "/sdk.zip",
-        "temp_folder": "/sdk/"
-    },
     "deploy": [
         "bin/linux/amd64",
         "bin/windows",
