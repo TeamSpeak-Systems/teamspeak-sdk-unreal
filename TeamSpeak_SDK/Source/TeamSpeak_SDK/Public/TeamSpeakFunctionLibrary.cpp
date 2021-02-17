@@ -3,6 +3,8 @@
 #include "TeamSpeak_Manager.h"
 #include "Interfaces/IPluginManager.h"
 
+#include "Misc/Paths.h"
+
 UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::utsFL = nullptr;
 TSharedPtr<TeamSpeak_Manager> UTeamSpeakFunctionLibrary::ts_Manager = MakeShareable(new TeamSpeak_Manager);
 
@@ -16,6 +18,7 @@ void UTeamSpeakFunctionLibrary::printMessageDebug(FString str) {
 }
 
 FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
+#if WITH_EDITORONLY_DATA
 	FString BaseDir = IPluginManager::Get().FindPlugin("TeamSpeak_SDK")->GetBaseDir();
 #if PLATFORM_WINDOWS
 	const FString SDKDir = FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("windows"));
@@ -26,6 +29,9 @@ FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
 #else
     printMessageDebug("invalid editor architecture");
     return "";
+#endif
+#else
+	return FString(FPlatformProcess::BaseDir());
 #endif
 }
 
