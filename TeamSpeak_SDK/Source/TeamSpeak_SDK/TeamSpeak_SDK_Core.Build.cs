@@ -58,7 +58,7 @@ namespace UnrealBuildTool.Rules
                         so don't try using it for PublicIncludePaths.Add or any other .build.cs functions.
                         For those, the ModuleDirectory variable is all you have as far as I know. */
                     string Source = Path.Combine(BinDir, ClientLibBin);
-                    string Destination = Path.Combine("$(BinaryOutputDir)", "ts3client.dll"); //"$(TargetOutputDir)/Foo.dll" $(BinaryOutputDir)
+                    string Destination = Path.Combine("$(BinaryOutputDir)", ClientLibBin); //"$(TargetOutputDir)/Foo.dll" $(BinaryOutputDir)
                     
                     RuntimeDependencies.Add(Destination, Source);
                     string soundbackends = Path.Combine(BinDir, "soundbackends");
@@ -71,10 +71,10 @@ namespace UnrealBuildTool.Rules
                     }
                 } else if (Target.Platform == UnrealTargetPlatform.Linux) {
                     string BinDir = Path.Combine(SDKDirectory, "bin", "linux", "amd64");
-                    string ClientLibBin = "ts3client.dll";
+                    string ClientLibBin = "libts3client.so";
                     
                     string Source = Path.Combine(BinDir, ClientLibBin);
-                    string Destination = Path.Combine("$(BinaryOutputDir)", "libts3client.so");
+                    string Destination = Path.Combine("$(BinaryOutputDir)", ClientLibBin);
 
                     RuntimeDependencies.Add(Destination, Source);
                     // PublicAdditionalLibraries.Add(Path.Combine(SDKDirectory, "bin", "linux", "amd64", "libts3client.so"));
