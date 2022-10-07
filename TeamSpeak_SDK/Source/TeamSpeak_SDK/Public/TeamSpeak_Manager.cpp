@@ -4,12 +4,16 @@
 #include "TeamSpeak_Helpers.h"
 
 #include <teamspeak/clientlib.h>
+#ifdef TEAMSPEAK_SDK_3_0
 #include <teamspeak/clientlib_publicdefinitions.h>
+#endif
 #include <teamspeak/public_definitions.h>
 #include <teamspeak/public_errors.h>
 
+#include <array>
 #include <codecvt>
 #include <string>
+#include <limits>
 
 using namespace com::teamspeak::helpers;
 
@@ -73,7 +77,6 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32
         funcs.onEditCapturedVoiceDataEvent = custom_function_ptr->on_edit_captured_voice_data_ptr;
         funcs.onCustom3dRolloffCalculationClientEvent = custom_function_ptr->on_custom_3d_rolloff_calc_client_ptr;
         funcs.onCustom3dRolloffCalculationWaveEvent = custom_function_ptr->on_custom_3d_rollof_calc_wave_ptr;
-		funcs.onTalkStatusChangeEvent = custom_function_ptr->on_talk_status_changed_ptr;
 
 		funcs.onClientPasswordEncrypt = custom_function_ptr->on_client_password_encrypt;
 
@@ -86,18 +89,18 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const ClientUIFunctions& funcs)
 {
     unsigned int error;
-    if ((error = ts3client_initClientLib(&funcs, NULL, usedLogTypes, TS_TCHAR_TO_UTF8(*logFileFolder), TS_TCHAR_TO_UTF8(*resourcesFolder))) != ERROR_ok) {
-        return FTeamSpeak_valueHandler<void*>(NULL, error);
+    if ((error = ts3client_initClientLib(&funcs, nullptr, usedLogTypes, TS_TCHAR_TO_UTF8(*logFileFolder), TS_TCHAR_TO_UTF8(*resourcesFolder))) != ERROR_ok) {
+        return FTeamSpeak_valueHandler<void*>(nullptr, error);
     }
-    return FTeamSpeak_valueHandler<void*>(NULL, error);
+    return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_destroyClientLib() {
 	unsigned int error;
 	if ((error = ts3client_destroyClientLib()) != ERROR_ok) {
-		return FTeamSpeak_valueHandler<void*>(NULL, error);
+		return FTeamSpeak_valueHandler<void*>(nullptr, error);
 	}
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getClientLibVersion() {
@@ -132,7 +135,7 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_spawnNewServerConne
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_destroyServerConnectionHandler(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_destroyServerConnectionHandler(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_createIdentity() {
@@ -258,7 +261,7 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getDefaultCapture
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openPlaybackDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& playbackDevice) {
 	unsigned int error;
 	error = ts3client_openPlaybackDevice(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*modeID), TS_TCHAR_TO_UTF8(*playbackDevice));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openCaptureDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice)
@@ -314,7 +317,7 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_openCaptureDevice(u
 		}
 	}
 	error = ts3client_openCaptureDevice(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*real_mode_id), TS_TCHAR_TO_UTF8(*captureDevice));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<TArray<FString>> TeamSpeak_Manager::UE_TS3_SDK_getCurrentPlaybackDeviceName(uint64 serverConnectionHandlerID) {
@@ -370,103 +373,103 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getCurrentCapture
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_initiateGracefulPlaybackShutdown(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_initiateGracefulPlaybackShutdown(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_closePlaybackDevice(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_closePlaybackDevice(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_closeCaptureDevice(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_closeCaptureDevice(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_activateCaptureDevice(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_activateCaptureDevice(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_playWaveFile(uint64 serverConnectionHandlerID, const FString& path) {
 	unsigned int error;
 	error = ts3client_playWaveFile(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*path));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_playWaveFileHandle(uint64 serverConnectionHandlerID, const FString& path, int32 loop, uint64 waveHandle) {
 	unsigned int error;
 	error = ts3client_playWaveFileHandle(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*path), loop, &waveHandle);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_pauseWaveFileHandle(uint64 serverConnectionHandlerID, uint64 waveHandle, int32 pause) {
 	unsigned int error;
 	error = ts3client_pauseWaveFileHandle(serverConnectionHandlerID, waveHandle, pause);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_closeWaveFileHandle(uint64 serverConnectionHandlerID, uint64 waveHandle) {
 	unsigned int error;
 	error = ts3client_closeWaveFileHandle(serverConnectionHandlerID, waveHandle);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_registerCustomDevice(const FString& deviceID, const FString& deviceDisplayName, int32 capFrequency, int32 capChannels, int32 playFrequency, int32 playChannels) {
 	unsigned int error;
 	error = ts3client_registerCustomDevice(TS_TCHAR_TO_UTF8(*deviceID), TS_TCHAR_TO_UTF8(*deviceDisplayName), capFrequency, capChannels, playFrequency, playChannels);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_unregisterCustomDevice(const FString& deviceID) {
 	unsigned int error;
 	error = ts3client_unregisterCustomDevice(TS_TCHAR_TO_UTF8(*deviceID));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_processCustomCaptureData(const FString& deviceName, const TArray<int16>& buffer, int32 samples) {
 	unsigned int error;
 	error = ts3client_processCustomCaptureData(TS_TCHAR_TO_UTF8(*deviceName), buffer.GetData(), samples);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_acquireCustomPlaybackData(const FString& deviceName, TArray<int32>& buffer, int32 samples) {
 	unsigned int error;
 	error = ts3client_acquireCustomPlaybackData(TS_TCHAR_TO_UTF8(*deviceName), (int16*)buffer.GetData(), samples);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setLocalTestMode(uint64 serverConnectionHandlerID, int32 status) {
 	unsigned int error;
 	error = ts3client_setLocalTestMode(serverConnectionHandlerID, status);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_startVoiceRecording(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_startVoiceRecording(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_stopVoiceRecording(uint64 serverConnectionHandlerID) {
 	unsigned int error;
 	error = ts3client_stopVoiceRecording(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_allowWhispersFrom(uint64 serverConnectionHandlerID, int32 clID) {
 	unsigned int error;
 	error = ts3client_allowWhispersFrom(serverConnectionHandlerID, clID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_removeFromAllowedWhispersFrom(uint64 serverConnectionHandlerID, int32 clID) {
 	unsigned int error;
 	error = ts3client_removeFromAllowedWhispersFrom(serverConnectionHandlerID, clID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 const TS3_VECTOR vectorConverter_FVector(FVector v) {
@@ -483,27 +486,27 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_systemset3DListener
 	const TS3_VECTOR _forward = vectorConverter_FVector(forward);
 	const TS3_VECTOR _up = vectorConverter_FVector(up);
 	error = ts3client_systemset3DListenerAttributes(serverConnectionHandlerID, &_position, &_forward, &_up);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_set3DWaveAttributes(uint64 serverConnectionHandlerID, uint64 waveHandle, FVector position) {
 	unsigned int error;
 	const TS3_VECTOR _position = vectorConverter_FVector(position);
 	error = ts3client_set3DWaveAttributes(serverConnectionHandlerID, waveHandle, &_position);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_systemset3DSettings(uint64 serverConnectionHandlerID, float distanceFactor, float rolloffScale) {
 	unsigned int error;
 	error = ts3client_systemset3DSettings(serverConnectionHandlerID, distanceFactor, rolloffScale);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_channelset3DAttributes(uint64 serverConnectionHandlerID, int32 clientID, FVector position) {
 	unsigned int error;
 	const TS3_VECTOR _position = vectorConverter_FVector(position);
 	error = ts3client_channelset3DAttributes(serverConnectionHandlerID, clientID, &_position);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<float> TeamSpeak_Manager::UE_TS3_SDK_getPreProcessorInfoValueFloat(uint64 serverConnectionHandlerID, const FString& ident) {
@@ -529,7 +532,7 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getPreProcessorCo
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setPreProcessorConfigValue(uint64 serverConnectionHandlerID, const FString& ident, const FString& value) {
 	unsigned int error;
 	error = ts3client_setPreProcessorConfigValue(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*ident), TS_TCHAR_TO_UTF8(*value));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getEncodeConfigValue(uint64 serverConnectionHandlerID, const FString& ident) {
@@ -555,25 +558,25 @@ FTeamSpeak_valueHandler<float> TeamSpeak_Manager::UE_TS3_SDK_getPlaybackConfigVa
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setPlaybackConfigValue(uint64 serverConnectionHandlerID, const FString& ident, const FString& value) {
 	unsigned int error;
 	error = ts3client_setPlaybackConfigValue(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*ident), TS_TCHAR_TO_UTF8(*value));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setClientVolumeModifier(uint64 serverConnectionHandlerID, int32 clientID, float value) {
 	unsigned int error;
 	error = ts3client_setClientVolumeModifier(serverConnectionHandlerID, clientID, value);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_logMessage(const FString& logMessage, int32 severity, const FString& channel, uint64 logID){
 	unsigned int error;
 	error = ts3client_logMessage(TS_TCHAR_TO_UTF8(*logMessage), static_cast<enum LogLevel>(severity), TS_TCHAR_TO_UTF8(*channel), logID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setLogVerbosity(int32 logVerbosity) {
 	unsigned int error;
 	error = ts3client_setLogVerbosity(static_cast<enum LogLevel>(logVerbosity));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getErrorMessage(int32 errorCode) {
 	unsigned int error;
@@ -621,135 +624,171 @@ FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_startConnection(uin
 
     delete[] wr_channel_path;
 
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_startConnectionWithChannelID(uint64 serverConnectionHandlerID, const FString& identity, const FString& ip, unsigned int port, const FString& nickname, uint64 defaultChannelId, const FString& defaultChannelPassword, const FString& serverPassword)
 {
     unsigned int error;
     error = ts3client_startConnectionWithChannelID(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*identity), TS_TCHAR_TO_UTF8(*ip), port, TS_TCHAR_TO_UTF8(*nickname), defaultChannelId, TS_TCHAR_TO_UTF8(*defaultChannelPassword), TS_TCHAR_TO_UTF8(*serverPassword));
-    return FTeamSpeak_valueHandler<void*>(NULL, error);
+    return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_stopConnection(uint64 serverConnectionHandlerID, const FString& quitMessage) {
 	unsigned int error;
 	error = ts3client_stopConnection(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*quitMessage));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientMove(uint64 serverConnectionHandlerID, int32 clientID, uint64 newChannelID, const FString& password, const FString& returnCode) {
-	unsigned int error;
-	error = ts3client_requestClientMove(serverConnectionHandlerID, clientID, newChannelID, TS_TCHAR_TO_UTF8(*password), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientMove(uint64 serverConnectionHandlerID, int32 clientID, uint64 newChannelID, const FString& password, const FString& returnCode)
+{
+#ifdef TEAMSPEAK_SDK_3_0
+	auto error = ts3client_requestClientMove(serverConnectionHandlerID, clientID, newChannelID, TS_TCHAR_TO_UTF8(*password), TS_TCHAR_TO_UTF8(*returnCode));
+#else
+	auto client_ids = std::array<uint16_t, 2>{static_cast<uint16_t>(clientID), 0};
+	auto error = ts3client_requestClientMove(serverConnectionHandlerID, client_ids.data(), newChannelID, TS_TCHAR_TO_UTF8(*password), TS_TCHAR_TO_UTF8(*returnCode));
+#endif
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientVariables(uint64 serverConnectionHandlerID, int32 clientID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestClientVariables(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientKickFromChannel(uint64 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode) {
-	unsigned int error;
-	error = ts3client_requestClientKickFromChannel(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientKickFromChannel(uint64 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode)
+{
+#ifdef TEAMSPEAK_SDK_3_0
+	auto error = ts3client_requestClientKickFromChannel(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
+#else
+	auto client_ids = std::array<uint16_t, 2>{static_cast<uint16_t>(clientID), 0};
+	auto error = ts3client_requestClientKickFromChannel(serverConnectionHandlerID, client_ids.data(), TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
+#endif
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientKickFromServer(uint64 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode) {
-	unsigned int error;
-	error = ts3client_requestClientKickFromServer(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientKickFromServer(uint64 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode)
+{
+#ifdef TEAMSPEAK_SDK_3_0
+	auto error = ts3client_requestClientKickFromServer(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
+#else
+	auto client_ids = std::array<uint16_t, 2>{static_cast<uint16_t>(clientID), 0};
+	auto error = ts3client_requestClientKickFromServer(serverConnectionHandlerID, client_ids.data(), TS_TCHAR_TO_UTF8(*kickReason), TS_TCHAR_TO_UTF8(*returnCode));
+#endif
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelDelete(uint64 serverConnectionHandlerID, uint64 channelID, int32 force, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelDelete(serverConnectionHandlerID, channelID, force, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelMove(uint64 serverConnectionHandlerID, uint64 channelID, uint64 newChannelParentID, uint64 newChannelOrder, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelMove(serverConnectionHandlerID, channelID, newChannelParentID, newChannelOrder, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestSendPrivateTextMsg(uint64 serverConnectionHandlerID, const FString& message, int32 targetClientID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestSendPrivateTextMsg(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*message), targetClientID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestSendChannelTextMsg(uint64 serverConnectionHandlerID, const FString& message, uint64 targetChannelID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestSendChannelTextMsg(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*message), targetChannelID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestSendServerTextMsg(uint64 serverConnectionHandlerID, const FString& message, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestSendServerTextMsg(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*message), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestConnectionInfo(uint64 serverConnectionHandlerID, int32 clientID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestConnectionInfo(serverConnectionHandlerID, clientID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientSetWhisperList(uint64 serverConnectionHandlerID, int32 clientID, const TArray<uint64>& targetChannelIDArray, const TArray<int32>& targetClientIDArray, const FString& returnCode) {
-	unsigned int error;
+	auto channel_ids = targetChannelIDArray;
+	if (channel_ids.Num() > 0)
+		channel_ids.Add(0);
 
-	error = ts3client_requestClientSetWhisperList(serverConnectionHandlerID, clientID, targetChannelIDArray.GetData(), reinterpret_cast<const anyID*>(targetClientIDArray.GetData()), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	auto client_ids = TArray<anyID>();
+	{
+		auto client_ids_reserve = targetClientIDArray.Num();
+		if (targetClientIDArray.Last() != 0)
+			client_ids_reserve += 1;
+		client_ids.Reserve(client_ids_reserve);
+	}
+	auto my_id = anyID{ 0 };
+	/*auto error =*/ ts3client_getClientID(serverConnectionHandlerID, &my_id);
+	
+	for (auto client_id : targetClientIDArray)
+	{
+		// filter own client_id, zeros, negatives and too large values just in case
+		if (client_id > 0 && client_id < std::numeric_limits<anyID>::max() && client_id != my_id)
+			client_ids.Add(static_cast<anyID>(client_id));
+	}
+	if (client_ids.Num() > 0) // given that, now add the zero terminator
+		client_ids.Add(0);
+
+	auto error = ts3client_requestClientSetWhisperList(serverConnectionHandlerID, clientID, channel_ids.Num() > 0 ? channel_ids.GetData() : nullptr, client_ids.Num() > 0 ? client_ids.GetData() : nullptr, TS_TCHAR_TO_UTF8(*returnCode));
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelSubscribe(uint64 serverConnectionHandlerID, const TArray<uint64>& channelIDArray, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelSubscribe(serverConnectionHandlerID, channelIDArray.GetData(), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelSubscribeAll(uint64 serverConnectionHandlerID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelSubscribeAll(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelUnsubscribe(uint64 serverConnectionHandlerID, const TArray<uint64>& channelIDArray, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelUnsubscribe(serverConnectionHandlerID, channelIDArray.GetData(), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelUnsubscribeAll(uint64 serverConnectionHandlerID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelUnsubscribeAll(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestChannelDescription(uint64 serverConnectionHandlerID, uint64 channelID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestChannelDescription(serverConnectionHandlerID, channelID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestMuteClients(uint64 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestMuteClients(serverConnectionHandlerID, reinterpret_cast<const anyID*>(clientIDArray.GetData()), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestUnmuteClients(uint64 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestUnmuteClients(serverConnectionHandlerID, reinterpret_cast<const anyID*>(clientIDArray.GetData()), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestClientIDs(uint64 serverConnectionHandlerID, const FString& clientUniqueIdentifier, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestClientIDs(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*clientUniqueIdentifier), TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_requestSlotsFromProvisioningServer(const FString& ip, uint32 port, const FString& serverPassword, uint32 slots, const FString& identity, const FString& region) {
@@ -763,12 +802,12 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_requestSlotsFromPro
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_cancelRequestSlotsFromProvisioningServer(uint64 requestHandle) {
 	unsigned int error;
 	error = ts3client_cancelRequestSlotsFromProvisioningServer(requestHandle);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_startConnectionWithProvisioningKey(uint64 serverConnectionHandlerID, const FString& identity, const FString& nickname, const FString& connectionKey, const FString& clientMetaData) {
 	unsigned int error;
 	error = ts3client_startConnectionWithProvisioningKey(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*identity), TS_TCHAR_TO_UTF8(*nickname), TS_TCHAR_TO_UTF8(*connectionKey), TS_TCHAR_TO_UTF8(*clientMetaData));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientID(uint64 serverConnectionHandlerID) {
@@ -821,13 +860,13 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getConnectionVari
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_cleanUpConnectionInfo(uint64 serverConnectionHandlerID, int32 clientID) {
 	unsigned int error;
 	error = ts3client_cleanUpConnectionInfo(serverConnectionHandlerID, clientID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestServerConnectionInfo(uint64 serverConnectionHandlerID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_requestServerConnectionInfo(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getServerConnectionVariableAsUInt64(uint64 serverConnectionHandlerID, uint32 flag) {
@@ -872,19 +911,19 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getClientSelfVari
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setClientSelfVariableAsInt(uint64 serverConnectionHandlerID, uint32 flag, int32 value) {
 	unsigned int error;
 	error = ts3client_setClientSelfVariableAsInt(serverConnectionHandlerID, flag, value);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setClientSelfVariableAsString(uint64 serverConnectionHandlerID, uint32 flag, const FString& value) {
 	unsigned int error;
 	error = ts3client_setClientSelfVariableAsString(serverConnectionHandlerID, flag, TS_TCHAR_TO_UTF8(*value));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_flushClientSelfUpdates(uint64 serverConnectionHandlerID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_flushClientSelfUpdates(serverConnectionHandlerID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getClientVariableAsInt(uint64 serverConnectionHandlerID, int32 clientID, uint32 flag) {
@@ -1007,31 +1046,31 @@ FTeamSpeak_valueHandler<int32> TeamSpeak_Manager::UE_TS3_SDK_getChannelIDFromCha
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setChannelVariableAsInt(uint64 serverConnectionHandlerID, uint64 channelID, uint32 flag, int32 value) {
 	unsigned int error;
 	error = ts3client_setChannelVariableAsInt(serverConnectionHandlerID, channelID, flag, value);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setChannelVariableAsUInt64(uint64 serverConnectionHandlerID, uint64 channelID, uint32 flag, uint64 value) {
 	unsigned int error;
 	error = ts3client_setChannelVariableAsUInt64(serverConnectionHandlerID, channelID, flag, value);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_setChannelVariableAsString(uint64 serverConnectionHandlerID, uint64 channelID, uint32 flag, const FString& value) {
 	unsigned int error;
 	error = ts3client_setChannelVariableAsString(serverConnectionHandlerID, channelID, flag, TS_TCHAR_TO_UTF8(*value));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_flushChannelUpdates(uint64 serverConnectionHandlerID, uint64 channelID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_flushChannelUpdates(serverConnectionHandlerID, channelID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_flushChannelCreation(uint64 serverConnectionHandlerID, uint64 channelParentID, const FString& returnCode) {
 	unsigned int error;
 	error = ts3client_flushChannelCreation(serverConnectionHandlerID, channelParentID, TS_TCHAR_TO_UTF8(*returnCode));
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 FTeamSpeak_valueHandler<TArray<int32>> TeamSpeak_Manager::UE_TS3_SDK_getChannelList(uint64 serverConnectionHandlerID) {
@@ -1121,10 +1160,14 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getServerVariable
 	return FTeamSpeak_valueHandler<FString>(result, error);
 }
 
-FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestServerVariables(uint64 serverConnectionHandlerID) {
-	unsigned int error;
-	error = ts3client_requestServerVariables(serverConnectionHandlerID);
-	return FTeamSpeak_valueHandler<void*>(NULL, error);
+FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_requestServerVariables(uint64 serverConnectionHandlerID)
+{
+	auto error = ts3client_requestServerVariables(serverConnectionHandlerID
+#ifndef TEAMSPEAK_SDK_3_0
+		, nullptr
+#endif
+	);
+	return FTeamSpeak_valueHandler<void*>(nullptr, error);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1216,8 +1259,26 @@ void TeamSpeak_Manager::onUpdateClientEvent(uint64 serverConnectionHandlerID, an
 	}, TStatId(), nullptr, ENamedThreads::GameThread);
 }
 
+namespace {
+	void on_client_move_common(uint64 connection_id, anyID client_id, uint64 old_channel_id, uint64 new_channel_id, int visibility)
+	{
+		if (new_channel_id == 0)
+		{
+			auto my_id = anyID{ 0 };
+			auto error = ts3client_getClientID(connection_id, &my_id);
+			if (ERROR_ok == error && my_id > 0)
+			{
+				error = ts3client_removeFromAllowedWhispersFrom(connection_id, client_id);
+				if (ERROR_ok != error)
+					ts3client_logMessage("on_client_move_common: Couldn't remove client from whisper allow list", LogLevel_ERROR, "", connection_id);
+			}
+		}
+	}
+}
+
 void TeamSpeak_Manager::onClientMoveEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* moveMessage)
 {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	const auto msg = TS_UTF8_TO_TCHAR(moveMessage);
 	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
 	{
@@ -1228,6 +1289,7 @@ void TeamSpeak_Manager::onClientMoveEvent(uint64 serverConnectionHandlerID, anyI
 
 void TeamSpeak_Manager::onClientMoveSubscriptionEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility)
 {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
 	{
 		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onClientMoveSubscriptionEvent.Broadcast(
@@ -1237,6 +1299,7 @@ void TeamSpeak_Manager::onClientMoveSubscriptionEvent(uint64 serverConnectionHan
 
 void TeamSpeak_Manager::onClientMoveTimeoutEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, const char* timeoutMessage)
 {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	const auto msg = TS_UTF8_TO_TCHAR(timeoutMessage);
 	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
 	{
@@ -1247,6 +1310,7 @@ void TeamSpeak_Manager::onClientMoveTimeoutEvent(uint64 serverConnectionHandlerI
 
 void TeamSpeak_Manager::onClientMoveMovedEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID moverID, const char* moverName, const char* moverUniqueIdentifier, const char* moveMessage)
 {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	TArray<FString> buffer;
 	buffer.Push(moverName);
 	buffer.Push(moverUniqueIdentifier);
@@ -1260,6 +1324,7 @@ void TeamSpeak_Manager::onClientMoveMovedEvent(uint64 serverConnectionHandlerID,
 
 void TeamSpeak_Manager::onClientKickFromChannelEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID kickerID, const char* kickerName, const char* kickerUniqueIdentifier, const char* kickMessage)
 {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	TArray<FString> buffer;
 	buffer.Push(kickerName);
 	buffer.Push(kickerUniqueIdentifier);
@@ -1272,6 +1337,7 @@ void TeamSpeak_Manager::onClientKickFromChannelEvent(uint64 serverConnectionHand
 }
 
 void TeamSpeak_Manager::onClientKickFromServerEvent(uint64 serverConnectionHandlerID, anyID clientID, uint64 oldChannelID, uint64 newChannelID, int visibility, anyID kickerID, const char* kickerName, const char* kickerUniqueIdentifier, const char* kickMessage) {
+	on_client_move_common(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility);
 	TArray<FString> buffer;
 	buffer.Push(kickerName);
 	buffer.Push(kickerUniqueIdentifier);
@@ -1372,10 +1438,17 @@ void TeamSpeak_Manager::onTalkStatusChangeEvent(uint64 serverConnectionHandlerID
 
 void TeamSpeak_Manager::onIgnoredWhisperEvent(uint64 serverConnectionHandlerID, anyID clientID)
 {
-	/*FGraphEventRef Task = */FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
+	/*FGraphEventRef Task = *//*FFunctionGraphTask::CreateAndDispatchWhenReady([=]()
 	{
 		UTeamSpeakFunctionLibrary::getUTeamSpeakFunctionLibrary()->onIgnoredWhisperEvent.Broadcast(serverConnectionHandlerID, clientID);
-	}, TStatId(), nullptr, ENamedThreads::GameThread);
+	}, TStatId(), nullptr, ENamedThreads::GameThread);*/
+	// with thread synchronization to blueprints, this event would take too long to synchronuously determine if the first whisper shall pass
+	// short circuiting
+	auto error = ts3client_allowWhispersFrom(serverConnectionHandlerID, clientID);
+	if (ERROR_ok != error)
+	{
+		ts3client_logMessage("onIgnoredWhisperEvent: Allow whisper failed", LogLevel_ERROR, "", serverConnectionHandlerID);
+	}
 }
 
 void TeamSpeak_Manager::onConnectionInfoEvent(uint64 serverConnectionHandlerID, anyID clientID)

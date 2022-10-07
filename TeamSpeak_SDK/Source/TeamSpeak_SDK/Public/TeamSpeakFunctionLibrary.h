@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "CoreMinimal.h"
+#include "Delegates/Delegate.h"
+
 #include "TeamSpeakFunctionLibrary.generated.h"
 
 class TeamSpeak_Manager;

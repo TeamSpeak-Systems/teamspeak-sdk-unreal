@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.h"
+
 #ifdef __clang__
     #define TS_EXPORT __attribute__((visibility("default")))
 #elif defined _WIN32
@@ -52,6 +54,9 @@ private:
     using OnEditPostProcessVoiceDataEventPtr = void(*)(uint64, anyID, short*, int, int, const unsigned int*, unsigned int*);
     using OnEditMixedPlaybackVoiceDataEventPtr = void(*)(uint64, short*, int, int, const unsigned int*, unsigned int*);
     using OnEditCapturedVoiceDataEventPtr = void(*)(uint64, short*, int, int, int*);
+#ifndef TEAMSPEAK_SDK_3_0
+	using OnEditCapturedVoiceDataPreprocessEvent = void(*)(uint64, short*, int, int, int*);
+#endif
     using OnCustom3dRolloffCalculationClientEventPtr = void(*)(uint64, anyID, float, float*);
     using OnCustom3dRolloffCalculationWaveEventPtr = void(*)(uint64, uint64, float, float*);
 
@@ -63,6 +68,9 @@ public:
     OnEditPostProcessVoiceDataEventPtr on_edit_post_process_voide_data_ptr = nullptr;
     OnEditMixedPlaybackVoiceDataEventPtr on_edit_mixed_playback_voide_data_ptr = nullptr;
     OnEditCapturedVoiceDataEventPtr on_edit_captured_voice_data_ptr = nullptr;
+#ifndef TEAMSPEAK_SDK_3_0
+	OnEditCapturedVoiceDataPreprocessEvent on_edit_captured_voice_data_preprocess_ptr = nullptr;
+#endif
     OnCustom3dRolloffCalculationClientEventPtr on_custom_3d_rolloff_calc_client_ptr = nullptr;
     OnCustom3dRolloffCalculationWaveEventPtr on_custom_3d_rollof_calc_wave_ptr = nullptr;
 	OnTalkStatusChangeEventPtr on_talk_status_changed_ptr = nullptr;
