@@ -16,10 +16,13 @@ class TEAMSPEAK_SDK_API UTeamSpeak_SynthComponent : public USynthComponent
 	virtual void BeginDestroy() override;
 
 protected:
-
+#if ENGINE_MAJOR_VERSION >= 5
+	virtual ISoundGeneratorPtr CreateSoundGenerator(const FSoundGeneratorInitParams& InParams) override;
+#else
 	virtual ISoundGeneratorPtr CreateSoundGenerator(int32 InSampleRate, int32 InNumChannels) override;
-
+#endif
 private:
+	ISoundGeneratorPtr do_create_sound_generator(int32 InSampleRate, int32 InNumChannels);
 
 	ISoundGeneratorPtr m_sound_generator;
 };
