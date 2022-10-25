@@ -1,18 +1,18 @@
-TeamSpeak 3 Plugin for Unreal Engine 4
+TeamSpeak SDK Plugin for Unreal Engine 4 & 5
 ======================================
 
 About
 -----
 
-A wrapper for the native C interface of the TeamSpeak SDK, shipped as plugin for Unreal Engine 4.
-The interface provides the complete TeamSpeak SDK functionality with Unreal Engine 4 supported types.
+A wrapper for the native C interface of the TeamSpeak SDK, shipped as plugin for Unreal Engine.
+The interface provides the complete TeamSpeak SDK functionality with Unreal Engine supported types.
 
 Features:
 
-* C++ style interface with Unreal Engine 4 types
+* C++ style interface with Unreal Engine types
 * Almost all functions and callback are availible in Blueprints
-* Packaged as Unreal Engine 4 code plugin
-* Fully-featured TeamSpeak-SDK
+* Packaged as Unreal Engine code plugin
+* Fully-featured TeamSpeak SDK
 
 
 Setup
@@ -24,7 +24,7 @@ Setup
    * for more information take a look in the TeamSpeak_SDK.Build.cs file.
 3. The TeamSpeak SDK plugin is ready to use. Just place the whole TeamSpeak_SDK folder in your Unreal Engine 4 Plugins path of your project.
 
-The Unreal Engine 4 build enviroment automatically detect the current target.
+The Unreal Engine build enviroment automatically detect the current target.
 At the moment we support Win64 and Win32.
 
 
