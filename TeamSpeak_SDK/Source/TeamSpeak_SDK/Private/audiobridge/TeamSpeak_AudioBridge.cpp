@@ -142,7 +142,7 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_initClientLib(int32& error)
     {
         {
             constexpr const auto* logFileFolder = "";
-            const auto result = teamspeak_manager->UE_TS3_SDK_initClientLib(LogTypes::LogType_USERLOGGING | LogTypes::LogType_FILE, logFileFolder, resources_folder.data(), &audio_funcs, custom_client_move_common);
+            const auto result = teamspeak_manager->UE_TS3_SDK_initClientLib(LogTypes::LogType_USERLOGGING, logFileFolder, resources_folder.data(), &audio_funcs, custom_client_move_common);
             if (result.errorCode)
             {
                 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Error initializing TeamSpeak client library: %f"), result.errorCode));
