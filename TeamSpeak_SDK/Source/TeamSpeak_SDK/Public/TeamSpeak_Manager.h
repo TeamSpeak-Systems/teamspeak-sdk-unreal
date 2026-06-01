@@ -2,18 +2,7 @@
 
 #include "config.h"
 
-#ifdef __clang__
-    #define TS_EXPORT __attribute__((visibility("default")))
-#elif defined _WIN32
-    #if WITH_TEAMSPEAK
-	#define TS_EXPORT   __declspec(dllexport)
-	#else
-	#define TS_EXPORT   __declspec(dllimport)
-	#endif
-#else
-    #define TS_EXPORT
-    static_assert(false, "Platform not supported");
-#endif
+#include <teamspeak/public_definitions.h>
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTeamSpeak, Log, All);
 
@@ -23,7 +12,7 @@ enum class ETeamSpeak_Error;
 using anyID = uint16;
 
 template<typename T>
-struct TS_EXPORT FTeamSpeak_valueHandler {
+struct FTeamSpeak_valueHandler {
     T value;
 
     uint32 errorCode;
@@ -46,6 +35,7 @@ struct TS_EXPORT FTeamSpeak_valueHandler {
 protected:
     FTeamSpeak_valueHandler() = delete;
 };
+using Custom_Client_Move_Common_Event_Ptr = void(*)(uint64, anyID, uint64, uint64, Visibility);
 using OnTalkStatusChangeEventPtr = void(*)(uint64, int, int, anyID);
 typedef struct Custom_Function_Function_Pointer_Type
 {
@@ -54,9 +44,7 @@ private:
     using OnEditPostProcessVoiceDataEventPtr = void(*)(uint64, anyID, short*, int, int, const unsigned int*, unsigned int*);
     using OnEditMixedPlaybackVoiceDataEventPtr = void(*)(uint64, short*, int, int, const unsigned int*, unsigned int*);
     using OnEditCapturedVoiceDataEventPtr = void(*)(uint64, short*, int, int, int*);
-#ifndef TEAMSPEAK_SDK_3_0
 	using OnEditCapturedVoiceDataPreprocessEvent = void(*)(uint64, short*, int, int, int*);
-#endif
     using OnCustom3dRolloffCalculationClientEventPtr = void(*)(uint64, anyID, float, float*);
     using OnCustom3dRolloffCalculationWaveEventPtr = void(*)(uint64, uint64, float, float*);
 
@@ -68,9 +56,7 @@ public:
     OnEditPostProcessVoiceDataEventPtr on_edit_post_process_voide_data_ptr = nullptr;
     OnEditMixedPlaybackVoiceDataEventPtr on_edit_mixed_playback_voide_data_ptr = nullptr;
     OnEditCapturedVoiceDataEventPtr on_edit_captured_voice_data_ptr = nullptr;
-#ifndef TEAMSPEAK_SDK_3_0
 	OnEditCapturedVoiceDataPreprocessEvent on_edit_captured_voice_data_preprocess_ptr = nullptr;
-#endif
     OnCustom3dRolloffCalculationClientEventPtr on_custom_3d_rolloff_calc_client_ptr = nullptr;
     OnCustom3dRolloffCalculationWaveEventPtr on_custom_3d_rollof_calc_wave_ptr = nullptr;
 	OnTalkStatusChangeEventPtr on_talk_status_changed_ptr = nullptr;
@@ -78,7 +64,7 @@ public:
 	OnClientPasswordEncryptPtr on_client_password_encrypt = nullptr;
 } Custom_Function_Function_Pointer;
 
-class TS_EXPORT TeamSpeak_Manager {
+class TeamSpeak_Manager {
 public:
     TeamSpeak_Manager() = default;
     virtual ~TeamSpeak_Manager() = default;
@@ -86,7 +72,7 @@ public:
     static TeamSpeak_Manager* get_instance();
 
 	/*Construction and Destruction*/
-    FTeamSpeak_valueHandler<void*> UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const Custom_Function_Function_Pointer* const custom_function_ptr = nullptr);
+    FTeamSpeak_valueHandler<void*> UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const Custom_Function_Function_Pointer* const custom_function_ptr = nullptr, Custom_Client_Move_Common_Event_Ptr custom_client_move_ptr = nullptr);
 	// Usage discouraged unless necessary.
     FTeamSpeak_valueHandler<void*> UE_TS3_SDK_initClientLib(int32 usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, const struct ClientUIFunctions& callbacks);
 
@@ -112,6 +98,10 @@ public:
 
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_openPlaybackDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& playbackDevice);
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_openCaptureDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice);
+	// Wraps ts3client_setAECReferenceDevice. Pass empty modeID + renderDeviceID to clear the override.
+	// On platforms whose backend can't loopback-capture an arbitrary render device (currently macOS) the
+	// SDK returns ERROR_not_implemented; callers should treat that as non-fatal.
+	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_setAECReferenceDevice(uint64 serverConnectionHandlerID, const FString& modeID, const FString& renderDeviceID);
 	FTeamSpeak_valueHandler<TArray<FString>> UE_TS3_SDK_getCurrentPlaybackDeviceName(uint64 serverConnectionHandlerID);
 	FTeamSpeak_valueHandler<FString> UE_TS3_SDK_getCurrentPlayBackMode(uint64 serverConnectionHandlerID);
 	FTeamSpeak_valueHandler<TArray<FString>> UE_TS3_SDK_getCurrentCaptureDeviceName(uint64 serverConnectionHandlerID);
@@ -189,11 +179,6 @@ public:
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_requestUnmuteClients(uint64 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode);
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_requestClientIDs(uint64 serverConnectionHandlerID, const FString& clientUniqueIdentifier, const FString& returnCode);
 
-	/*provisioning server calls*/
-	FTeamSpeak_valueHandler<int32> UE_TS3_SDK_requestSlotsFromProvisioningServer(const FString& ip, uint32 port, const FString& serverPassword, uint32 slots, const FString& identity, const FString& region);
-	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_cancelRequestSlotsFromProvisioningServer(uint64 requestHandle);
-	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_startConnectionWithProvisioningKey(uint64 serverConnectionHandlerID, const FString& identity, const FString& nickname, const FString& connectionKey, const FString& clientMetaData);
-
 	/*retrieve information ClientLib has stored*/
 
 	/*general info*/
@@ -249,8 +234,12 @@ public:
 	FTeamSpeak_valueHandler<FString> UE_TS3_SDK_getServerVariableAsString(uint64 serverConnectionHandlerID, uint32 flag);
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_requestServerVariables(uint64 serverConnectionHandlerID);
 
-
-
+	/* used internally */
+	void handle_custom_client_move_common(uint64 connection_id, anyID client_id, uint64 old_channel_id, uint64 new_channel_id, Visibility visibility)
+	{
+		if (m_on_client_move_common_custom_cbk)
+			m_on_client_move_common_custom_cbk(connection_id, client_id, old_channel_id, new_channel_id, visibility);
+	}
 private:
 	static void onConnectStatusChangeEvent              (uint64 serverConnectionHandlerID, int newStatus, unsigned int errorNumber);
 	static void onServerProtocolVersionEvent            (uint64 serverConnectionHandlerID, int protocolVersion);
@@ -293,11 +282,11 @@ private:
 	static void onCustom3dRolloffCalculationClientEvent	(uint64 serverConnectionHandlerID, anyID clientID, float distance, float* volume);
 	static void onCustom3dRolloffCalculationWaveEvent	(uint64 serverConnectionHandlerID, uint64 waveHandle, float distance, float* volume);*/
 	static void onUserLoggingMessageEvent               (const char* logmessage, int logLevel, const char* logChannel, uint64 logID, const char* logTime, const char* completeLogString);
-	static void onProvisioningSlotRequestResultEvent    (unsigned int error, uint64 requestHandle, const char* connectionKey);
 	static void onCheckServerUniqueIdentifierEvent      (uint64 serverConnectionHandlerID, const char* ServerUniqueIdentifier, int* cancelConnect);
 	// static void onClientPasswordEncrypt                 (uint64 serverConnectionHandlerID, const char* plaintext, char* encryptedText, int encryptedTextByteSize);
 
 	OnTalkStatusChangeEventPtr m_on_talk_status_change_cbk = nullptr;
+	Custom_Client_Move_Common_Event_Ptr m_on_client_move_common_custom_cbk = nullptr;
 };
 
 namespace converting_helper

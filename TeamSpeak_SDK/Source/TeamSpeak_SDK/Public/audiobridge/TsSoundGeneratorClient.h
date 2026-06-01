@@ -5,6 +5,7 @@
 #include "DSP/Dsp.h"
 
 #include <array>
+#include <atomic>
 
 /**
  * This Sound Generator routes a TeamSpeak client playback into UE
@@ -21,6 +22,12 @@ public:
 
 	// Called when a new buffer is required.
 	int32 OnGenerateAudio(float* OutAudio, int32 NumSamples) override final;
+
+	// Request that any audio still buffered at the previous device sample rate be discarded.
+	// Set by the audio bridge during a custom-device re-registration (sample-rate change);
+	// honored on the consumer (audio render) thread at the top of OnGenerateAudio so the
+	// SPSC circular buffer is only ever drained from its reader thread.
+	void RequestFlush() { m_flush_requested.store(true, std::memory_order_relaxed); }
 
 	// Returns the number of samples to render per callback
 	int32 GetDesiredNumSamplesToRenderPerCallback() const override final
@@ -47,4 +54,7 @@ private:
 
 	Audio::TCircularAudioBuffer<int16> m_circular_buffer{ kBuffersize };
 	int32 m_overflows{ 0 };
+
+	// Set from the game thread (bridge), consumed/cleared on the audio render thread.
+	std::atomic<bool> m_flush_requested{ false };
 };

@@ -1,6 +1,4 @@
-
-
 #pragma once
 
-#include "Engine.h"
-
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"

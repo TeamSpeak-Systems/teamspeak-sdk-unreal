@@ -275,9 +275,9 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Debug")
 	static FString getSoundBackendDir_Editor();
 
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	// C++ only: lifecycle is owned by UTeamSpeak_SDKSubsystem (BP-visible).
 	static void TeamSpeak_initClientLib(ETeamSpeak_LogTypes usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	// C++ only: lifecycle is owned by UTeamSpeak_SDKSubsystem (BP-visible).
 	static void TeamSpeak_destroyClientLib(int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
 	static FString TeamSpeak_getClientLibVersion(int32 &error);
@@ -311,6 +311,8 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	static void TeamSpeak_openPlaybackDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& playbackDevice, int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
 	static void TeamSpeak_openCaptureDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice, int32 &error);
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	static void TeamSpeak_setAECReferenceDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& renderDeviceID, int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
 	static FString TeamSpeak_getCurrentPlaybackDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
@@ -425,12 +427,6 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	static void TeamSpeak_requestUnmuteClients(int32 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode, int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
 	static void TeamSpeak_requestClientIDs(int32 serverConnectionHandlerID, const FString& clientUniqueIdentifier, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Provisioning")
-	static int32 TeamSpeak_requestSlotsFromProvisioningServer(const FString& ip, int32 port, const FString& serverPassword, int32 slots, const FString& identity, const FString& region, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Provisioning")
-	static void TeamSpeak_cancelRequestSlotsFromProvisioningServer(int32 requestHandle, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Provisioning")
-	static void TeamSpeak_startConnectionWithProvisioningKey(int32 serverConnectionHandlerID, const FString& identity, const FString& nickname, const FString& connectionKey, const FString& clientMetaData, int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
 	static int32 TeamSpeak_getClientID(int32 serverConnectionHandlerID, int32 &error);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
@@ -639,10 +635,6 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Message")
 	FTeamSpeakOnUserLoggingMessageEvent onUserLoggingMessageEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FTeamSpeakOnProvisioningSlotRequestedResultEvent, int32, error, int32, requestHandle, const FString&, connectionKey);
-	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Connection")
-	FTeamSpeakOnProvisioningSlotRequestedResultEvent onProvisioningSlotRequestResultEvent;
-	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FTeamSpeakOnCheckServerUniqueIdentifierEvent, int32, serverConnectionHandlerID, const FString&, serverUniqueidentifier, const TArray<int32>&, cancelConnect);
 	UPROPERTY(BlueprintAssignable, Category = "TeamSpeak|Callbacks|Server")
 	FTeamSpeakOnCheckServerUniqueIdentifierEvent onCheckServerUniqueIdentifierEvent;

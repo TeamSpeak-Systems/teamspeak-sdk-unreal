@@ -1,19 +1,26 @@
 {
 	"FileVersion": 3,
-	"Version": 1.9,
-	"FriendlyVersion": "1.9",
+	"Version": 2.0,
+	"FriendlyVersion": "2.0",
 	"FriendlyName": "TeamSpeak Plugin",
-	"Description": "This package will allow you to integrate the TeamSpeak VoIP solution into an Unreal Engine 4 project. The TeamSpeak API is a pure C API to allow integration into many different languages. This package includes a wrapper to connect the TeamSpeak C API with Unreal Engine blueprints. In addition, it is possible to build your integration with C++ by using the TeamSpeak API directly.",
-	"Category": "TeamSpeak",
+	"Description": "Add proven, low-latency voice communication to your Unreal project. This plugin wraps the TeamSpeak SDK for Unreal Engine 5, providing Blueprint and C++ APIs for server connections, channel and identity management, and audio routing through the engine's audio mixer.",
+	"Category": "Audio|Voice",
 	"CreatedBy": "TeamSpeak Systems GmbH",
 	"CreatedByURL": "https://www.teamspeak.com/",
 	"DocsURL": "https://www.teamspeak.com/downloads",
 	"MarketplaceURL": "",
 	"SupportURL": "http://support.teamspeak.com/",
-	"EnabledByDefault": true,
+	"EnabledByDefault": false,
 	"CanContainContent": false,
 	"IsBetaVersion": false,
 	"Installed": false,
+	"SupportedTargetPlatforms": [
+		"Win64",
+		"Linux",
+		"Mac",
+		"Android",
+		"IOS"
+	],
 	"Modules": [
 		{
 			"Name": "TeamSpeak_SDK",

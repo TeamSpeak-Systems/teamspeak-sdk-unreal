@@ -8,24 +8,27 @@
 UTeamSpeakFunctionLibrary* UTeamSpeakFunctionLibrary::utsFL = nullptr;
 TSharedPtr<TeamSpeak_Manager> UTeamSpeakFunctionLibrary::ts_Manager = MakeShareable(new TeamSpeak_Manager);
 
-UTeamSpeakFunctionLibrary::UTeamSpeakFunctionLibrary(const class FObjectInitializer& PCIP) 
+UTeamSpeakFunctionLibrary::UTeamSpeakFunctionLibrary(const class FObjectInitializer& PCIP)
 	: Super(PCIP) {
 	utsFL = this;
 }
 
 void UTeamSpeakFunctionLibrary::printMessageDebug(FString str) {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, str);
+	UE_LOG(LogTeamSpeak, Log, TEXT("printMessageDebug: %s"), *str);
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, str);
+	}
 }
 
 FString UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor() {
+	// SDK 3.3.0+ ships built-in sound backends, so this dir is only consulted
+	// if you deploy custom backends alongside the client lib.
 #if WITH_EDITORONLY_DATA
 	FString BaseDir = IPluginManager::Get().FindPlugin("TeamSpeak_SDK")->GetBaseDir();
 #if PLATFORM_WINDOWS
-	const FString SDKDir = FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("windows"));
-	const FString LibDir = FPaths::Combine(*SDKDir, FString(FPlatformProcess::GetBinariesSubdirectory()).ToLower());
-	return LibDir;
+	return FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("windows-x86_64"), TEXT("bin"));
 #elif PLATFORM_LINUX
-	return FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("bin"), TEXT("linux"), TEXT("amd64"));
+	return FPaths::Combine(*BaseDir, TEXT("ThirdParty"), TEXT("linux-x86_64"), TEXT("lib"));
 #else
     printMessageDebug("invalid editor architecture");
     return "";
@@ -145,6 +148,11 @@ void UTeamSpeakFunctionLibrary::TeamSpeak_openPlaybackDevice(int32 serverConnect
 void UTeamSpeakFunctionLibrary::TeamSpeak_openCaptureDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice, int32 &error) {
 	auto handler = ts_Manager->UE_TS3_SDK_openCaptureDevice(serverConnectionHandlerID, modeID, captureDevice);
     error = handler.getErrorCode();
+}
+
+void UTeamSpeakFunctionLibrary::TeamSpeak_setAECReferenceDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& renderDeviceID, int32 &error) {
+	auto handler = ts_Manager->UE_TS3_SDK_setAECReferenceDevice(serverConnectionHandlerID, modeID, renderDeviceID);
+	error = handler.getErrorCode();
 }
 
 FString UTeamSpeakFunctionLibrary::TeamSpeak_getCurrentPlaybackDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault)
@@ -313,7 +321,7 @@ FString UTeamSpeakFunctionLibrary::TeamSpeak_getEncodeConfigValu(int32 serverCon
 	return handler.getValue();
 }
 
-float UTeamSpeakFunctionLibrary::TeamSpeak_getPlaybackConfigValueAsFloat(int32 serverConnectionHandlerID, const FString& ident, int32 &error) { 
+float UTeamSpeakFunctionLibrary::TeamSpeak_getPlaybackConfigValueAsFloat(int32 serverConnectionHandlerID, const FString& ident, int32 &error) {
 	auto handler = ts_Manager->UE_TS3_SDK_getPlaybackConfigValueAsFloat(serverConnectionHandlerID, ident);
     error = handler.getErrorCode();
 	return handler.getValue();
@@ -427,19 +435,6 @@ void UTeamSpeakFunctionLibrary::TeamSpeak_requestClientIDs(int32 serverConnectio
 	auto handler = ts_Manager->UE_TS3_SDK_requestClientIDs(serverConnectionHandlerID, clientUniqueIdentifier, returnCode);
     error = handler.getErrorCode();
 }
-int32 UTeamSpeakFunctionLibrary::TeamSpeak_requestSlotsFromProvisioningServer(const FString& ip, int32 port, const FString& serverPassword, int32 slots, const FString& identity, const FString& region, int32 &error) {
-	auto handler = ts_Manager->UE_TS3_SDK_requestSlotsFromProvisioningServer(ip, port, serverPassword, slots, identity, region);
-    error = handler.getErrorCode();
-	return handler.getValue();
-}
-void UTeamSpeakFunctionLibrary::TeamSpeak_cancelRequestSlotsFromProvisioningServer(int32 requestHandle, int32 &error) {
-	auto handler = ts_Manager->UE_TS3_SDK_cancelRequestSlotsFromProvisioningServer(requestHandle);
-    error = handler.getErrorCode();
-}
-void UTeamSpeakFunctionLibrary::TeamSpeak_startConnectionWithProvisioningKey(int32 serverConnectionHandlerID, const FString& identity, const FString& nickname, const FString& connectionKey, const FString& clientMetaData, int32 &error) {
-	auto handler = ts_Manager->UE_TS3_SDK_startConnectionWithProvisioningKey(serverConnectionHandlerID, identity, nickname, connectionKey, clientMetaData);
-    error = handler.getErrorCode();
-}
 int32 UTeamSpeakFunctionLibrary::TeamSpeak_getClientID(int32 serverConnectionHandlerID, int32 &error) {
 	auto handler = ts_Manager->UE_TS3_SDK_getClientID(serverConnectionHandlerID);
     error = handler.getErrorCode();
@@ -486,7 +481,7 @@ int32 UTeamSpeakFunctionLibrary::TeamSpeak_getClientVariableAsInt(int32 serverCo
 	return handler.getValue();
 }
 int32 UTeamSpeakFunctionLibrary::TeamSpeak_getClientVariableAsUint64(int32 serverConnectionHandlerID, int32 clientID, ETeamSpeak_ClientProperties flag, int32 &error) {
-	 
+
 	auto handler = ts_Manager->UE_TS3_SDK_getClientVariableAsUInt64(serverConnectionHandlerID, clientID, static_cast<int32>(flag));
     error = handler.getErrorCode();
 	return handler.getValue();
@@ -629,7 +624,6 @@ void UTeamSpeakFunctionLibrary::TeamSpeak_break_all_bindings() {
 	ts_fl->onPlaybackShutdownCompleteEvent.Clear();
 	ts_fl->onSoundDeviceListChangedEvent.Clear();
 	ts_fl->onUserLoggingMessageEvent.Clear();
-	ts_fl->onProvisioningSlotRequestResultEvent.Clear();
 	ts_fl->onCheckServerUniqueIdentifierEvent.Clear();
 	ts_fl->onClientPasswordEncrypt.Clear();
 }

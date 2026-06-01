@@ -1,0 +1,16 @@
+{
+    "origin": {
+        "url": "https://files.teamspeak-services.com/releases/sdk/",
+        "version": "3.5.0"
+    },
+    "platforms": [
+        "android-arm64-v8a",
+        "android-x86_64",
+        "ios",
+        "linux-armv8",
+        "linux-x86_64",
+        "macos-armv8",
+        "macos-x86_64",
+        "windows-x86_64"
+    ]
+}

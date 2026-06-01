@@ -8,25 +8,26 @@
 #include "TeamSpeak_SynthComponent_Client.generated.h"
 
 
-UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = TeamSpeak, meta = (BlueprintSpawnableComponent))
 class TEAMSPEAK_SDK_API UTeamSpeak_SynthComponent_Client : public USynthComponent
 {
 	GENERATED_BODY()
-	
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
 	void TeamSpeak_AssignSynthToClient(int32 serverConnectionHandlerID, int32 clientId);
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
 	void TeamSpeak_DeassignSynthFromClient();
 
+	void BeginDestroy() override final;
 protected:
 	// Called when synth is created
-	virtual bool Init(int32& SampleRate) override;
+	bool Init(int32& SampleRate) override final;
 
 #if ENGINE_MAJOR_VERSION >= 5
-	virtual ISoundGeneratorPtr CreateSoundGenerator(const FSoundGeneratorInitParams& InParams) override;
+	ISoundGeneratorPtr CreateSoundGenerator(const FSoundGeneratorInitParams& InParams) override final;
 #else
-	virtual ISoundGeneratorPtr CreateSoundGenerator(int32 InSampleRate, int32 InNumChannels) override;
+	ISoundGeneratorPtr CreateSoundGenerator(int32 InSampleRate, int32 InNumChannels) override final;
 #endif
 
 private:

@@ -6,11 +6,11 @@
 #include "TeamSpeak_SynthComponent.generated.h"
 
 
-UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = TeamSpeak, meta = (BlueprintSpawnableComponent))
 class TEAMSPEAK_SDK_API UTeamSpeak_SynthComponent : public USynthComponent
 {
 	GENERATED_BODY()
-	
+
 	// Called when synth is created
 	virtual bool Init(int32& SampleRate) override;
 	virtual void BeginDestroy() override;

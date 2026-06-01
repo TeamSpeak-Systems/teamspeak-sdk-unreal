@@ -2,6 +2,7 @@
 
 #include "audiobridge/TeamSpeak_SynthComponent.h"
 
+#include "TeamSpeak_VoiceClientComponent.h"
 #include "TeamSpeak_Helpers.h"
 
 #include "teamspeak/clientlib.h"
@@ -23,6 +24,19 @@ using audio_buffer_t = short;
 using namespace com::teamspeak::helpers;
 
 UTeamSpeak_AudioBridge* UTeamSpeak_AudioBridge::utsAB = nullptr;
+
+namespace
+{
+    // Custom device identity and fixed parameters. Only the playback frequency varies at runtime
+    // (tracked to the UE mixer rate); the capture half is unused (mic opens in a native mode).
+    const TCHAR* const kCustomDeviceId = TEXT("TeamSpeak_UE_Audio");
+    constexpr int32 kCustomCaptureFrequency = 48000;
+    constexpr int32 kCustomCaptureChannels  = 1;
+    constexpr int32 kCustomPlaybackChannels = 2;
+    // Best-effort initial registration rate; the first master generator reconciles to the real
+    // mixer rate. 48000 is the common case, so a matching mixer means zero reconcile churn.
+    constexpr int32 kDefaultPlaybackFrequency = 48000;
+}
 
 UTeamSpeak_AudioBridge::UTeamSpeak_AudioBridge(const class FObjectInitializer& PCIP)
     : Super(PCIP)
@@ -89,9 +103,7 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_initClientLib(int32& error)
 
     };
 
-#ifndef TEAMSPEAK_SDK_3_0
     audio_funcs.on_edit_captured_voice_data_preprocess_ptr = nullptr;
-#endif
 
     // manipulate spatialization (incoming client audio)
     audio_funcs.on_custom_3d_rolloff_calc_client_ptr = nullptr; /*[](
@@ -114,12 +126,23 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_initClientLib(int32& error)
     auto soundbackend_folder = UTeamSpeakFunctionLibrary::getSoundBackendDir_Editor();
     const auto resources_folder = fstring_to_utf8(*soundbackend_folder);
 
+    auto custom_client_move_common = [](uint64 connection_id, anyID client_id, uint64 old_channel_id, uint64 new_channel_id, Visibility visibility) {
+        auto* audio_bridge = utsAB;
+        if (!audio_bridge)
+            return;
+        if (audio_bridge->TeamSpeakConnectionId != connection_id)
+            return;
+
+        if (new_channel_id == 0)
+            audio_bridge->m_client_sound_generators.erase(client_id);
+    };
+
     auto* teamspeak_manager = TeamSpeak_Manager::get_instance();
     if (teamspeak_manager)
     {
         {
             constexpr const auto* logFileFolder = "";
-            const auto result = teamspeak_manager->UE_TS3_SDK_initClientLib(LogTypes::LogType_USERLOGGING, logFileFolder, resources_folder.data(), &audio_funcs);
+            const auto result = teamspeak_manager->UE_TS3_SDK_initClientLib(LogTypes::LogType_USERLOGGING | LogTypes::LogType_FILE, logFileFolder, resources_folder.data(), &audio_funcs, custom_client_move_common);
             if (result.errorCode)
             {
                 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Error initializing TeamSpeak client library: %f"), result.errorCode));
@@ -130,29 +153,23 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_initClientLib(int32& error)
             }
         }
 
-        {
-            const auto result = teamspeak_manager->UE_TS3_SDK_spawnNewServerConnectionHandler(0);
-            if (result.errorCode)
-            {
-                // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Error spawning server connection handler: %f"), result.errorCode));
-            }
-            else
-            {
-                auto* thiz = getUTeamSpeak_AudioBridge();
-                if (thiz)
-                    thiz->TeamSpeakConnectionId = result.value;
-                // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("TeamSpeak: Connection Handler Spawned"));
-            }
-        }
+        // Connection handler is spawned by the connection layer (UTeamSpeak_VoiceClientComponent).
+        // It registers itself via SetActiveConnection() so AudioBridge callbacks filter on it and
+        // the bridge can reopen its playback device during a sample-rate re-registration.
 
         {
-            const auto result = teamspeak_manager->UE_TS3_SDK_registerCustomDevice(TEXT("TeamSpeak_UE_Audio"), TEXT("TeamSpeak_UE_Audio"), 48000, 1, 48000, 2);
+            const auto result = teamspeak_manager->UE_TS3_SDK_registerCustomDevice(kCustomDeviceId, kCustomDeviceId, kCustomCaptureFrequency, kCustomCaptureChannels, kDefaultPlaybackFrequency, kCustomPlaybackChannels);
             if (result.errorCode)
             {
                 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Couldn't register custom device: %f"), result.errorCode));
             }
             else
             {
+                // Static method: seed the singleton's tracked rate to match what we just registered.
+                if (UTeamSpeak_AudioBridge* bridge = getUTeamSpeak_AudioBridge())
+                {
+                    bridge->RegisteredPlayFrequency = kDefaultPlaybackFrequency;
+                }
                 // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("TeamSpeak: Custom device registered"));
             }
         }
@@ -169,8 +186,9 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_shutdown()
     {
         audio_bridge->m_master_sound_generator.Reset();
         audio_bridge->m_client_sound_generators.clear();
-        teamspeak_manager->UE_TS3_SDK_unregisterCustomDevice(TEXT("TeamSpeak_UE_Audio"));
-        teamspeak_manager->UE_TS3_SDK_destroyServerConnectionHandler(audio_bridge->TeamSpeakConnectionId);
+        teamspeak_manager->UE_TS3_SDK_unregisterCustomDevice(kCustomDeviceId);
+        audio_bridge->RegisteredPlayFrequency = 0;
+        // Connection handler is destroyed by the connection layer (UTeamSpeak_VoiceClientComponent::Disconnect).
         teamspeak_manager->UE_TS3_SDK_destroyClientLib();
         // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("TeamSpeak: shutdown complete"));
     }
@@ -178,6 +196,62 @@ void UTeamSpeak_AudioBridge::TeamSpeak_AudioBridge_shutdown()
     {
         // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TeamSpeak: shutdown failed"));
         ts3client_logMessage("TeamSpeak: shutdown failed", LogLevel_ERROR, "TeamSpeak AudioBridge", audio_bridge ? audio_bridge->TeamSpeakConnectionId : 0);
+    }
+#endif
+}
+
+void UTeamSpeak_AudioBridge::RequestClientBufferFlush()
+{
+    // Runs on the game thread, after playback has been closed (see ReconcilePlaybackRate), so the
+    // SDK is not pushing into these buffers. Each generator drains itself on its own reader thread.
+    for (auto& entry : m_client_sound_generators)
+    {
+        if (auto pinned = entry.second.Pin())
+        {
+            pinned->RequestFlush();
+        }
+    }
+}
+
+void UTeamSpeak_AudioBridge::ReconcilePlaybackRate(int32 DesiredRate)
+{
+#if !UE_SERVER
+    check(IsInGameThread());
+
+    if (DesiredRate <= 0 || DesiredRate == RegisteredPlayFrequency)
+    {
+        return;
+    }
+
+    auto* teamspeak_manager = TeamSpeak_Manager::get_instance();
+    if (!teamspeak_manager)
+    {
+        return;
+    }
+
+    // The device must not be open while we unregister it, and stale-rate buffers must be dropped.
+    // Done as a callback so the component keeps ownership of its bPlaybackOpen / AEC bookkeeping
+    // and runs it in the closed window between its own playback close and re-open.
+    auto ReRegister = [this, teamspeak_manager, DesiredRate]()
+    {
+        RequestClientBufferFlush();
+        teamspeak_manager->UE_TS3_SDK_unregisterCustomDevice(kCustomDeviceId);
+        teamspeak_manager->UE_TS3_SDK_registerCustomDevice(
+            kCustomDeviceId, kCustomDeviceId,
+            kCustomCaptureFrequency, kCustomCaptureChannels,
+            DesiredRate, kCustomPlaybackChannels);
+        RegisteredPlayFrequency = DesiredRate;
+    };
+
+    if (UTeamSpeak_VoiceClientComponent* Component = ActivePlaybackComponent.Get())
+    {
+        Component->ApplyPlaybackDeviceReRegistration(ReRegister);
+    }
+    else
+    {
+        // No connected handler: just swap the global registration. The next OpenPlaybackDevice
+        // (on connect) opens against the corrected rate.
+        ReRegister();
     }
 #endif
 }
@@ -233,7 +307,6 @@ FTeamSpeak_valueHandler<ETeamSpeak_InputDeactivationStatusUpdate> UTeamSpeak_Aud
     if (ERROR_ok == error)
         LastWhisperTargets = client_ids;
 
-    auto status = ETeamSpeak_InputDeactivationStatus::INPUT_ACTIVE;
     return FTeamSpeak_valueHandler<ETeamSpeak_InputDeactivationStatusUpdate>(input_deactivation_update, error);
 #endif
 }

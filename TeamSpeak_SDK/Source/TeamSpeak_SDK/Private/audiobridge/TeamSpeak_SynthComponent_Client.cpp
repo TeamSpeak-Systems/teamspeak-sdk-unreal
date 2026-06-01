@@ -1,4 +1,4 @@
-#include "TeamSpeak_SynthComponent_Client.h"
+#include "audiobridge/TeamSpeak_SynthComponent_Client.h"
 
 #include "audiobridge/TeamSpeak_AudioBridge.h"
 
@@ -23,6 +23,12 @@ bool UTeamSpeak_SynthComponent_Client::Init(int32& SampleRate)
 	NumChannels = 1;
 	SampleRate = 48000;
 	return true;
+}
+
+void UTeamSpeak_SynthComponent_Client::BeginDestroy()
+{
+	maybe_remove_from_manager();
+	Super::BeginDestroy();
 }
 
 ISoundGeneratorPtr UTeamSpeak_SynthComponent_Client::do_create_sound_generator(int32 InSampleRate, int32 InNumChannels)
