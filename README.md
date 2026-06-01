@@ -18,14 +18,16 @@ Features:
 Setup
 -----
 
-1. In order to use the TeamSpeak functionality, download the TeamSpeak SDK from our website (http://TeamSpeak.com/downloads#sdk).
-2. Now the TeamSpeak SDK has to be integrated in the Unreal Engine search paths.
-   * Unzip the TeamSpeak SDK and copy the "bin", "include" and "lib" folder in "TeamSpeak_SDK/ThirdParty"
-   * for more information take a look in the TeamSpeak_SDK.Build.cs file.
-3. The TeamSpeak SDK plugin is ready to use. Just place the whole TeamSpeak_SDK folder in your Unreal Engine 4 Plugins path of your project.
+1. Populate the TeamSpeak SDK into the plugin's `ThirdParty` folder by running the bootstrap script from this `Plugins/` directory:
 
-The Unreal Engine build enviroment automatically detect the current target.
-At the moment we support Win64 and Win32.
+   ```
+   python bootstrap.py
+   ```
+
+   This downloads the SDK version pinned in `bootstrap_config.json` (currently 3.5.0) from `files.teamspeak-services.com` and lays each platform's `client_sdk/<platform-arch>/` straight into `TeamSpeak_SDK/ThirdParty/<platform-arch>/`. To change the SDK version or trim the platform list, edit `bootstrap_config.json`. For details on how the libraries are consumed, see `TeamSpeak_SDK.Build.cs`.
+2. The TeamSpeak SDK plugin is ready to use. Just place the whole `TeamSpeak_SDK` folder in your Unreal Engine project's `Plugins` path.
+
+The Unreal Engine build environment automatically detects the current target. The bootstrap populates these platforms: `windows-x86_64`, `linux-x86_64`, `linux-armv8`, `macos-x86_64`, `macos-armv8`, `android-arm64-v8a`, `android-x86_64`, `ios`.
 
 
 Classes
