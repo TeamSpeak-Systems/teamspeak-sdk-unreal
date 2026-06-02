@@ -1,4 +1,4 @@
-TeamSpeak SDK Plugin for Unreal Engine 4 & 5
+TeamSpeak SDK Plugin for Unreal Engine 5
 ======================================
 
 About
