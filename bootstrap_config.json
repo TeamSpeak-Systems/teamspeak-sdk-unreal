@@ -1,7 +1,7 @@
 {
     "origin": {
         "url": "https://files.teamspeak-services.com/releases/sdk/",
-        "version": "3.5.0"
+        "version": "3.5.2"
     },
     "platforms": [
         "android-arm64-v8a",

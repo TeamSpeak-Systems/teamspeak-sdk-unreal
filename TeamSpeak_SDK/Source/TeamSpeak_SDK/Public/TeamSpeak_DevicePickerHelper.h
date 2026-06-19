@@ -6,7 +6,7 @@
 
 class UTeamSpeak_VoiceClientComponent;
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, meta = (DisplayName = "TeamSpeak Device Info"))
 struct FTeamSpeakDeviceInfo
 {
     GENERATED_BODY()
@@ -34,7 +34,7 @@ struct FTeamSpeakDeviceInfo
  * custom playback device "TeamSpeak_UE_Audio". UE's own output device choice is what the user
  * actually hears. GetPlaybackDevices is provided for AEC-reference enumeration only.
  */
-UCLASS()
+UCLASS(meta = (DisplayName = "TeamSpeak Device Picker Helper"))
 class TEAMSPEAK_SDK_API UTeamSpeak_DevicePickerHelper : public UBlueprintFunctionLibrary
 {
     GENERATED_BODY()

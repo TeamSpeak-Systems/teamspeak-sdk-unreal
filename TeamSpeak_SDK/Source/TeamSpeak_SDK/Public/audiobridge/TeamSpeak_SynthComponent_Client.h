@@ -8,7 +8,7 @@
 #include "TeamSpeak_SynthComponent_Client.generated.h"
 
 
-UCLASS(ClassGroup = TeamSpeak, meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = TeamSpeak, meta = (BlueprintSpawnableComponent, DisplayName = "TeamSpeak Synth Component Client"))
 class TEAMSPEAK_SDK_API UTeamSpeak_SynthComponent_Client : public USynthComponent
 {
 	GENERATED_BODY()

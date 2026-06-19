@@ -4,7 +4,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "TeamSpeak_SDKSubsystem.generated.h"
 
-UCLASS()
+UCLASS(meta = (DisplayName = "TeamSpeak SDK Subsystem"))
 class TEAMSPEAK_SDK_API UTeamSpeak_SDKSubsystem : public UGameInstanceSubsystem
 {
     GENERATED_BODY()

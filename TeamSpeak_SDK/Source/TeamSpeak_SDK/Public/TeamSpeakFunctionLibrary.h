@@ -8,21 +8,21 @@
 
 class TeamSpeak_Manager;
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Visibility"))
 enum class ETeamSpeak_Visibility : uint8 {
 	ENTER = 0,
 	RETAIN,
 	LEAVE
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Talk Status"))
 enum class ETeamSpeak_TalkStatus : uint8 {
 	STATUS_NOT_TALKING = 0,
 	STATUS_TALKING = 1,
 	STATUS_TALKING_WHILE_DISABLED = 2,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Codec Type"))
 enum class  ETeamSpeak_CodecType : uint8 {
 	CODEC_SPEEX_NARROWBAND = 0,   //mono,   16bit,  8kHz, bitrate dependent on the quality setting
 	CODEC_SPEEX_WIDEBAND,         //mono,   16bit, 16kHz, bitrate dependent on the quality setting
@@ -32,14 +32,14 @@ enum class  ETeamSpeak_CodecType : uint8 {
 	CODEC_OPUS_MUSIC,             //stereo, 16bit, 48khz, bitrate dependent on the quality setting, optimized for music
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Codec Encryption Mode"))
 enum class  ETeamSpeak_CodecEncryptionMode : uint8 {
 	CODEC_ENCRYPTION_PER_CHANNEL = 0,
 	CODEC_ENCRYPTION_FORCED_OFF,
 	CODEC_ENCRYPTION_FORCED_ON,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Text Message Target Mode"))
 enum class ETeamSpeak_TextMessageTargetMode : uint8 {
 	TextMessageTarget_INVALID = 0,
 	TextMessageTarget_CLIENT,
@@ -48,37 +48,37 @@ enum class ETeamSpeak_TextMessageTargetMode : uint8 {
 	TextMessageTarget_MAX
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Mute Input Status"))
 enum class ETeamSpeak_MuteInputStatus : uint8 {
 	MUTEINPUT_NONE = 0,
 	MUTEINPUT_MUTED,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Mute Output Status"))
 enum class ETeamSpeak_MuteOutputStatus : uint8 {
 	MUTEOUTPUT_NONE = 0,
 	MUTEOUTPUT_MUTED,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Hardware Input Status"))
 enum class ETeamSpeak_HardwareInputStatus : uint8 {
 	HARDWAREINPUT_DISABLED = 0,
 	HARDWAREINPUT_ENABLED,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Hardware Output Status"))
 enum class ETeamSpeak_HardwareOutputStatus : uint8 {
 	HARDWAREOUTPUT_DISABLED = 0,
 	HARDWAREOUTPUT_ENABLED,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Input Deactivation Status"))
 enum class ETeamSpeak_InputDeactivationStatus : uint8 {
 	INPUT_ACTIVE = 0,
 	INPUT_DEACTIVATED = 1,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Reason Identifier"))
 enum class ETeamSpeak_ReasonIdentifier : uint8 {
 	REASON_NONE = 0,  //no reason data
 	REASON_MOVED = 1,  //{SectionInvoker}
@@ -94,7 +94,7 @@ enum class ETeamSpeak_ReasonIdentifier : uint8 {
 	REASON_CLIENTDISCONNECT_SERVER_SHUTDOWN = 11,  //reasonmsg=reason
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Channel Properties"))
 enum class ETeamSpeak_ChannelProperties : uint8 {
 	CHANNEL_NAME = 0,                       //Available for all channels that are "in view", always up-to-date
 	CHANNEL_TOPIC,                          //Available for all channels that are "in view", always up-to-date
@@ -116,7 +116,7 @@ enum class ETeamSpeak_ChannelProperties : uint8 {
 	CHANNEL_ENDMARKER,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Client Properties"))
 enum class ETeamSpeak_ClientProperties : uint8 {
 	CLIENT_UNIQUE_IDENTIFIER = 0,           //automatically up-to-date for any client "in view", can be used to identify this particular client installation
 	CLIENT_NICKNAME,                        //automatically up-to-date for any client "in view"
@@ -142,7 +142,7 @@ enum class ETeamSpeak_ClientProperties : uint8 {
 	CLIENT_ENDMARKER,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Virtual Server Properties"))
 enum class ETeamSpeak_VirtualServerProperties : uint8 {
 	VIRTUALSERVER_UNIQUE_IDENTIFIER = 0,             //available when connected, can be used to identify this particular server installation
 	VIRTUALSERVER_NAME,                              //available and always up-to-date when connected
@@ -159,7 +159,7 @@ enum class ETeamSpeak_VirtualServerProperties : uint8 {
 	VIRTUALSERVER_ENDMARKER,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Log Types"))
 enum class ETeamSpeak_LogTypes : uint8 {
 	LogType_NONE = 0x0000,
 	LogType_FILE = 0x0001,
@@ -170,7 +170,7 @@ enum class ETeamSpeak_LogTypes : uint8 {
     LogType_SYSLOG = 0x0020,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Log Level"))
 enum class ETeamSpeak_LogLevel : uint8 {
 	LogLevel_CRITICAL = 0, //these messages stop the program
 	LogLevel_ERROR,        //everything that is really bad, but not so bad we need to shut down
@@ -180,7 +180,7 @@ enum class ETeamSpeak_LogLevel : uint8 {
 	LogLevel_DEVEL         //developer only output (will not be displayed in release mode)
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Group Whisper Type"))
 enum class ETeamSpeak_GroupWhisperType : uint8 {
 	GROUPWHISPERTYPE_SERVERGROUP = 0,
 	GROUPWHISPERTYPE_CHANNELGROUP = 1,
@@ -189,7 +189,7 @@ enum class ETeamSpeak_GroupWhisperType : uint8 {
 	GROUPWHISPERTYPE_ENDMARKER,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Group Whisper Target Mode"))
 enum class ETeamSpeak_GroupWhisperTargetMode : uint8 {
 	GROUPWHISPERTARGETMODE_ALL = 0,
 	GROUPWHISPERTARGETMODE_CURRENTCHANNEL = 1,
@@ -201,21 +201,21 @@ enum class ETeamSpeak_GroupWhisperTargetMode : uint8 {
 	GROUPWHISPERTARGETMODE_ENDMARKER,
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Mono Sound Destination"))
 enum class ETeamSpeak_MonoSoundDestination : uint8 {
 	MONO_SOUND_DESTINATION_ALL = 0, /* Send mono sound to all available speakers */
 	MONO_SOUND_DESTINATION_FRONT_CENTER = 1, /* Send mono sound to front center speaker if available */
 	MONO_SOUND_DESTINATION_FRONT_LEFT_AND_RIGHT = 2  /* Send mono sound to front left/right speakers if available */
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Security Salt Options"))
 enum class ETeamSpeak_SecuritySaltOptions : uint8 {
 	SECURITY_SALT_CHECK_INVALID = 0,
 	SECURITY_SALT_CHECK_NICKNAME = 1, /* put nickname into security hash */
 	SECURITY_SALT_CHECK_META_DATA = 2  /* put (game)meta data into security hash */
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Client Command"))
 enum class ETeamSpeak_ClientCommand : uint8 {
 	CLIENT_COMMAND_requestConnectionInfo = 0,
 	CLIENT_COMMAND_requestClientMove = 1,
@@ -232,7 +232,7 @@ enum class ETeamSpeak_ClientCommand : uint8 {
 	CLIENT_COMMAND_ENDMARKER = 12
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak ACL Type"))
 enum class ETeamSpeak_ACLType : uint8 {
 	ACL_NONE = 0,
 	ACL_WHITE_LIST = 1,
@@ -248,7 +248,7 @@ enum class EConnectStatus : uint8 {
     STATUS_CONNECTION_ESTABLISHED = 4, //we are CONNECTED and we have the client and channels available
 };
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, meta = (DisplayName = "TeamSpeak 2D Array"))
 struct FTeamSpeak_2dArray {
 	GENERATED_USTRUCT_BODY()
 
@@ -262,11 +262,11 @@ struct FTeamSpeak_2dArray {
     FTeamSpeak_2dArray() = default;
 };
 
-UCLASS()
+UCLASS(meta = (DisplayName = "TeamSpeak Function Library"))
 class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Statics")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Statics", meta = (DisplayName = "Get TeamSpeak Function Library"))
 	static UTeamSpeakFunctionLibrary* getUTeamSpeakFunctionLibrary();
 	
 	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Debug")
@@ -279,220 +279,220 @@ class TEAMSPEAK_SDK_API UTeamSpeakFunctionLibrary : public UBlueprintFunctionLib
 	static void TeamSpeak_initClientLib(ETeamSpeak_LogTypes usedLogTypes, const FString& logFileFolder, const FString& resourcesFolder, int32 &error);
 	// C++ only: lifecycle is owned by UTeamSpeak_SDKSubsystem (BP-visible).
 	static void TeamSpeak_destroyClientLib(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Get Client Lib Version"))
 	static FString TeamSpeak_getClientLibVersion(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Get Client Lib Version Number"))
 	static int32 TeamSpeak_getClientLibVersionNumber(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Spawn New Server Connection Handler"))
 	static int32 TeamSpeak_spawnNewServerConnectionHandler(int32 port, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Destroy Server Connection Handler"))
 	static void TeamSpeak_destroyServerConnectionHandler(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Create Identity"))
 	static FString TeamSpeak_createIdentity(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Identity String To Unique Identifier"))
 	static FString TeamSpeak_identityStringToUniqueIdentifier(const FString& identityString, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Playback Device List"))
 	static TArray<FTeamSpeak_2dArray> TeamSpeak_getPlaybackDeviceList(const FString& modeID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Capture Device List"))
 	static TArray<FTeamSpeak_2dArray> TeamSpeak_getCaptureDeviceList(const FString& modeID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Playback Mode List"))
 	static TArray<FString> TeamSpeak_getPlaybackModeList(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Capture Mode List"))
 	static TArray<FString> TeamSpeak_getCaptureModeList(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Default Playback Device"))
 	static TArray<FString> TeamSpeak_getDefaultPlaybackDevice(const FString& modeID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Default Capture Device"))
 	static TArray<FString> TeamSpeak_getDefaultCaptureDevice(const FString& modeID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Default Play Back Mode"))
 	static FString TeamSpeak_getDefaultPlayBackMode(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Default Capture Mode"))
 	static FString TeamSpeak_getDefaultCaptureMode(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Open Playback Device"))
 	static void TeamSpeak_openPlaybackDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& playbackDevice, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Open Capture Device"))
 	static void TeamSpeak_openCaptureDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& captureDevice, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set AEC Reference Device"))
 	static void TeamSpeak_setAECReferenceDevice(int32 serverConnectionHandlerID, const FString& modeID, const FString& renderDeviceID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Current Playback Device Name"))
 	static FString TeamSpeak_getCurrentPlaybackDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Current Play Back Mode"))
 	static FString TeamSpeak_getCurrentPlayBackMode(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Current Capture Device Name"))
 	static FString TeamSpeak_getCurrentCaptureDeviceName(int32 serverConnectionHandlerID, int32 &error, int32 &isDefault);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Current Capture Mode"))
 	static FString TeamSpeak_getCurrentCaptureMode(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Initiate Graceful Playback Shutdown"))
 	static void TeamSpeak_initiateGracefulPlaybackShutdown(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Close Playback Device"))
 	static void TeamSpeak_closePlaybackDevice(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Close Capture Device"))
 	static void TeamSpeak_closeCaptureDevice(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Activate Capture Device"))
 	static void TeamSpeak_activateCaptureDevice(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Play Wave File"))
 	static void TeamSpeak_playWaveFile(int32 serverConnectionHandlerID, const FString& path, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Play Wave File Handle"))
 	static void TeamSpeak_playWaveFileHandle(int32 serverConnectionHandlerID, const FString& path, int32 loop, int32 waveHandle, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Pause Wave File Handle"))
 	static void TeamSpeak_pauseWaveFileHandle(int32 serverConnectionHandlerID, int32 waveHandle, int32 pause, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Close Wave File Handle"))
 	static void TeamSpeak_closeWaveFileHandle(int32 serverConnectionHandlerID, int32 waveHandle, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Register Custom Device"))
 	static void TeamSpeak_registerCustomDevice(const FString& deviceID, const FString& deviceDisplayName, int32 capFrequency, int32 capChannels, int32 playFrequency, int32 playChannels, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Unregister Custom Device"))
 	static void TeamSpeak_unregisterCustomDevice(const FString& deviceID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Process Custom Capture Data"))
 	static void TeamSpeak_processCustomCaptureData(const FString& deviceName, const TArray<int32>& buffer, int32 samples, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Acquire Custom Playback Data"))
 	static void TeamSpeak_acquireCustomPlaybackData(const FString& deviceName, TArray<int32>& buffer, int32 samples, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set Local Test Mode"))
 	static void TeamSpeak_setLocalTestMode(int32 serverConnectionHandlerID, int32 status, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Start Voice Recording"))
 	static void TeamSpeak_startVoiceRecording(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Stop Voice Recording"))
 	static void TeamSpeak_stopVoiceRecording(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper", meta = (DisplayName = "TeamSpeak Allow Whispers From"))
 	static void TeamSpeak_allowWhispersFrom(int32 serverConnectionHandlerID, int32 clID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper", meta = (DisplayName = "TeamSpeak Remove From Allowed Whispers From"))
 	static void TeamSpeak_removeFromAllowedWhispersFrom(int32 serverConnectionHandlerID, int32 clID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Systemset 3D Listener Attributes"))
 	static void TeamSpeak_systemset3DListenerAttributes(int32 serverConnectionHandlerID, FVector position, FVector forward, FVector up, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set 3D Wave Attributes"))
 	static void TeamSpeak_set3DWaveAttributes(int32 serverConnectionHandlerID, int32 waveHandle, FVector position, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Systemset 3D Settings"))
 	static void TeamSpeak_systemset3DSettings(int32 serverConnectionHandlerID, float distanceFactor, float rolloffScale, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Channelset 3D Attributes"))
 	static void TeamSpeak_channelset3DAttributes(int32 serverConnectionHandlerID, int32 clientID, FVector position, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Pre Processor Info Value Float"))
 	static float TeamSpeak_getPreProcessorInfoValueFloat(int32 serverConnectionHandlerID, const FString& ident, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Pre Processor Config Value"))
 	static FString TeamSpeak_getPreProcessorConfigValue(int32 serverConnectionHandlerID, const FString& ident, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set Pre Processor Config Value"))
 	static void TeamSpeak_setPreProcessorConfigValue(int32 serverConnectionHandlerID, const FString& ident, const FString& value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Encode Config Valu"))
 	static FString TeamSpeak_getEncodeConfigValu(int32 serverConnectionHandlerID, const FString& ident, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Get Playback Config Value As Float"))
 	static float TeamSpeak_getPlaybackConfigValueAsFloat(int32 serverConnectionHandlerID, const FString& ident, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set Playback Config Value"))
 	static void TeamSpeak_setPlaybackConfigValue(int32 serverConnectionHandlerID, const FString& ident, const FString& value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Sound", meta = (DisplayName = "TeamSpeak Set Client Volume Modifier"))
 	static void TeamSpeak_setClientVolumeModifier(int32 serverConnectionHandlerID, int32 clientID, float value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Log")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Log", meta = (DisplayName = "TeamSpeak Log Message"))
 	static void TeamSpeak_logMessage(const FString& logMessage, int32 severity, const FString& channel, int32 logID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Log")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Log", meta = (DisplayName = "TeamSpeak Set Log Verbosity"))
 	static void TeamSpeak_setLogVerbosity(int32 logVerbosity, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|ErrorHandling")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|ErrorHandling", meta = (DisplayName = "TeamSpeak Get Error Message"))
 	static FString TeamSpeak_getErrorMessage(int32 errorCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Start Connection"))
 	static void TeamSpeak_startConnection(int32 serverConnectionHandlerID, const FString& identity, const FString& ip, int32 port, const FString& nickname, const TArray<FString>& defaultChannelArray, const FString& defaultChannelPassword, const FString& serverPassword, int32 &error);
-    UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+    UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Start Connection With Channel ID"))
     static void TeamSpeak_startConnectionWithChannelID(int32 serverConnectionHandlerID, const FString& identity, const FString& ip, int32 port, const FString& nickname, int32 defaultChannelId, const FString& defaultChannelPassword, const FString& serverPassword, int32& error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Stop Connection"))
 	static void TeamSpeak_stopConnection(int32 serverConnectionHandlerID, const FString& quitMessage, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Client Move"))
 	static void TeamSpeak_requestClientMove(int32 serverConnectionHandlerID, int32 clientID, int32 newChannelID, const FString& password, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Client Variables"))
 	static void TeamSpeak_requestClientVariables(int32 serverConnectionHandlerID, int32 clientID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Client Kick From Channel"))
 	static void TeamSpeak_requestClientKickFromChannel(int32 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Client Kick From Server"))
 	static void TeamSpeak_requestClientKickFromServer(int32 serverConnectionHandlerID, int32 clientID, const FString& kickReason, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Request Channel Delete"))
 	static void TeamSpeak_requestChannelDelete(int32 serverConnectionHandlerID, int32 channelID, int32 force, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Request Channel Move"))
 	static void TeamSpeak_requestChannelMove(int32 serverConnectionHandlerID, int32 channelID, int32 newChannelParentID, int32 newChannelOrder, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message", meta = (DisplayName = "TeamSpeak Request Send Private Text Msg"))
 	static void TeamSpeak_requestSendPrivateTextMsg(int32 serverConnectionHandlerID, const FString& message, int32 targetClientID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message", meta = (DisplayName = "TeamSpeak Request Send Channel Text Msg"))
 	static void TeamSpeak_requestSendChannelTextMsg(int32 serverConnectionHandlerID, const FString& message, int32 targetChannelID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Message", meta = (DisplayName = "TeamSpeak Request Send Server Text Msg"))
 	static void TeamSpeak_requestSendServerTextMsg(int32 serverConnectionHandlerID, const FString& message, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Request Connection Info"))
 	static void TeamSpeak_requestConnectionInfo(int32 serverConnectionHandlerID, int32 clientID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Whisper", meta = (DisplayName = "TeamSpeak Request Client Set Whisper List"))
 	static void TeamSpeak_requestClientSetWhisperList(int32 serverConnectionHandlerID, int32 clientID, const TArray<int32>& targetChannelIDArray, const TArray<int32>& targetClientIDArray, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription", meta = (DisplayName = "TeamSpeak Request Channel Subscribe"))
 	static void TeamSpeak_requestChannelSubscribe(int32 serverConnectionHandlerID, const TArray<int32>& channelIDArray, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription", meta = (DisplayName = "TeamSpeak Request Channel Subscribe All"))
 	static void TeamSpeak_requestChannelSubscribeAll(int32 serverConnectionHandlerID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription", meta = (DisplayName = "TeamSpeak Request Channel Unsubscribe"))
 	static void TeamSpeak_requestChannelUnsubscribe(int32 serverConnectionHandlerID, const TArray<int32>& channelIDArray, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Subscription", meta = (DisplayName = "TeamSpeak Request Channel Unsubscribe All"))
 	static void TeamSpeak_requestChannelUnsubscribeAll(int32 serverConnectionHandlerID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Request Channel Description"))
 	static void TeamSpeak_requestChannelDescription(int32 serverConnectionHandlerID, int32 channelID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Mute Clients"))
 	static void TeamSpeak_requestMuteClients(int32 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Unmute Clients"))
 	static void TeamSpeak_requestUnmuteClients(int32 serverConnectionHandlerID, const TArray<int32>& clientIDArray, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Request Client IDs"))
 	static void TeamSpeak_requestClientIDs(int32 serverConnectionHandlerID, const FString& clientUniqueIdentifier, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client ID"))
 	static int32 TeamSpeak_getClientID(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Get Connection Status"))
 	static int32 TeamSpeak_getConnectionStatus(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Clean Up Connection Info"))
 	static void TeamSpeak_cleanUpConnectionInfo(int32 serverConnectionHandlerID, int32 clientID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Request Server Connection Info"))
 	static void TeamSpeak_requestServerConnectionInfo(int32 serverConnectionHandlerID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client Self Variable Asint 32"))
 	static int32 TeamSpeak_getClientSelfVariableAsint32(int32 serverConnectionHandlerID, ETeamSpeak_ClientProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client Self Variable As String"))
 	static FString TeamSpeak_getClientSelfVariableAsString(int32 serverConnectionHandlerID, ETeamSpeak_ClientProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Set Client Self Variable Asint 32"))
 	static void TeamSpeak_setClientSelfVariableAsint32(int32 serverConnectionHandlerID, ETeamSpeak_ClientProperties flag, int32 value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Set Client Self Variable As String"))
 	static void TeamSpeak_setClientSelfVariableAsString(int32 serverConnectionHandlerID, ETeamSpeak_ClientProperties flag, const FString& value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Flush Client Self Updates"))
 	static void TeamSpeak_flushClientSelfUpdates(int32 serverConnectionHandlerID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client Variable As Int"))
 	static int32 TeamSpeak_getClientVariableAsInt(int32 serverConnectionHandlerID, int32 clientID, ETeamSpeak_ClientProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client Variable As Uint 64"))
 	static int32 TeamSpeak_getClientVariableAsUint64(int32 serverConnectionHandlerID, int32 clientID, ETeamSpeak_ClientProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client Variable As String"))
 	static FString TeamSpeak_getClientVariableAsString(int32 serverConnectionHandlerID, int32 clientID, ETeamSpeak_ClientProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Client", meta = (DisplayName = "TeamSpeak Get Client List"))
 	static TArray<int32> TeamSpeak_getClientList(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Of Client"))
 	static int32 TeamSpeak_getChannelOfClient(int32 serverConnectionHandlerID, int32 clientID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Variable As Int"))
 	static int32 TeamSpeak_getChannelVariableAsInt(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Variable As Uint 64"))
 	static int32 TeamSpeak_getChannelVariableAsUint64(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Variable As String"))
 	static FString TeamSpeak_getChannelVariableAsString(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel ID From Channel Names"))
 	static int32 TeamSpeak_getChannelIDFromChannelNames(int32 serverConnectionHandlerID, const TArray<FString>& channelNameArray, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Set Channel Variable As Int"))
 	static void TeamSpeak_setChannelVariableAsInt(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, int32 value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Set Channel Variable As Uint 64"))
 	static void TeamSpeak_setChannelVariableAsUint64(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, int32 value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Set Channel Variable As String"))
 	static void TeamSpeak_setChannelVariableAsString(int32 serverConnectionHandlerID, int32 channelID, ETeamSpeak_ChannelProperties flag, const FString& value, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Flush Channel Updates"))
 	static void TeamSpeak_flushChannelUpdates(int32 serverConnectionHandlerID, int32 channelID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Flush Channel Creation"))
 	static void TeamSpeak_flushChannelCreation(int32 serverConnectionHandlerID, int32 channelParentID, const FString& returnCode, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel List"))
 	static TArray<int32> TeamSpeak_getChannelList(int32 serverConnectionHandlerID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Client List"))
 	static TArray<int32> TeamSpeak_getChannelClientList(int32 serverConnectionHandlerID, int32 channelID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Parent Channel Of Channel"))
 	static int32 TeamSpeak_getParentChannelOfChannel(int32 serverConnectionHandlerID, int32 channelID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Channel", meta = (DisplayName = "TeamSpeak Get Channel Empty Secs"))
 	static int32 TeamSpeak_getChannelEmptySecs(int32 serverConnectionHandlerID, int32 channelID, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Get Server Connection Handler List"))
 	static TArray<int32> TeamSpeak_getServerConnectionHandlerList(int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Get Server Variable As Uint 64"))
 	static int32 TeamSpeak_getServerVariableAsUint64(int32 serverConnectionHandlerID, ETeamSpeak_VirtualServerProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Get Server Variable As Int"))
 	static int32 TeamSpeak_getServerVariableAsInt(int32 serverConnectionHandlerID, ETeamSpeak_VirtualServerProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Get Server Variable As String"))
 	static FString TeamSpeak_getServerVariableAsString(int32 serverConnectionHandlerID, ETeamSpeak_VirtualServerProperties flag, int32 &error);
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Connection", meta = (DisplayName = "TeamSpeak Request Server Variables"))
 	static void TeamSpeak_requestServerVariables(int32 serverConnectionHandlerID, int32 &error);
 
-	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy")
+	UFUNCTION(BlueprintCallable, Category = "TeamSpeak|Function|Init/Destroy", meta = (DisplayName = "TeamSpeak Break All Bindings"))
 	static void TeamSpeak_break_all_bindings();
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FTeamSpeakOnConnectStatusChangeEvent, int32, serverconnectionHandlerID, EConnectStatus, newStatus, int32, errorNumber);

@@ -5,9 +5,11 @@
 #include "audiobridge/TeamSpeak_AudioBridge.h"
 #include "audiobridge/TeamSpeak_SynthComponent.h"
 #include <teamspeak/public_errors.h>
+#include <teamspeak/clientlib.h>
 
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
+#include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerController.h"
 
 // SDK's virtual capture/playback mode used for app-provided custom audio devices
@@ -18,7 +20,57 @@ static constexpr const TCHAR* CustomModeId = TEXT("custom");
 
 UTeamSpeak_VoiceClientComponent::UTeamSpeak_VoiceClientComponent()
 {
-    PrimaryComponentTick.bCanEverTick = false;
+    // Tick exists solely to poll the PTT hotkey (see TickComponent). It starts disabled and is
+    // switched on only while PTT is enabled (RefreshTickEnabled), so a component that never uses
+    // PTT never ticks — nothing here runs unless the consumer asks for it.
+    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bStartWithTickEnabled = false;
+}
+
+void UTeamSpeak_VoiceClientComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    // Only reachable while PTT is enabled (the tick is disabled otherwise). Mic-level metering is
+    // pull-based via GetCurrentInputLevel — this component does no per-frame audio polling.
+    if (!bPTTEnabled || HandlerID == 0)
+    {
+        return;
+    }
+
+    const APlayerController* PC = GetOwningPC();
+    if (!PC || !PC->IsLocalController() || !PTTKey.IsValid())
+    {
+        return;
+    }
+
+    // If PTT was enabled before the handler existed (toggle on pre-connect), SetPTTEnabled's gate call
+    // was a no-op. Assert it once now so the mic starts silent without needing a priming key press.
+    if (!bPTTGateApplied)
+    {
+        bPTTGateApplied = true;
+        SetPushToTalkActive(false);
+    }
+
+    // Poll raw key state (UPlayerInput), edge-detect, gate transmission. We poll rather than bind an
+    // Enhanced Input action because programmatically-created IA event bindings did not fire reliably.
+    const bool bDown = PC->IsInputKeyDown(PTTKey);
+    if (bDown != bPTTKeyDown)
+    {
+        bPTTKeyDown = bDown;
+        SetPushToTalkActive(bDown);
+    }
+}
+
+void UTeamSpeak_VoiceClientComponent::SetPTTKey(FKey NewKey)
+{
+    PTTKey = NewKey;
+    // Drop any held state so a rebind mid-press doesn't leave the mic stuck open.
+    bPTTKeyDown = false;
+    if (bPTTEnabled)
+    {
+        SetPushToTalkActive(false);
+    }
 }
 
 APlayerController* UTeamSpeak_VoiceClientComponent::GetOwningPC() const
@@ -55,6 +107,9 @@ void UTeamSpeak_VoiceClientComponent::BeginPlay()
     {
         Connect();
     }
+
+    // Honor a config/default-enabled PTT: tick starts disabled, so enable it now if PTT is already on.
+    RefreshTickEnabled();
 }
 
 void UTeamSpeak_VoiceClientComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -80,7 +135,7 @@ void UTeamSpeak_VoiceClientComponent::EndPlay(const EEndPlayReason::Type EndPlay
 
         if (HandlerID != 0)
         {
-            // Synchronous teardown — Disconnect() waits for the SDK's STATUS_DISCONNECTED
+            // Synchronous teardown — Disconnect() now waits for the SDK's STATUS_DISCONNECTED
             // event before destroying the handler, but during component destruction we cannot
             // wait for that async callback. Send the disconnect command best-effort and
             // immediately tear down to avoid leaking the handler.
@@ -129,6 +184,10 @@ void UTeamSpeak_VoiceClientComponent::Connect()
 
     if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
     {
+        UE_LOG(LogTeamSpeak, Warning,
+            TEXT("startConnection failed on handler %d: error %d (address='%s' port=%d nickname='%s' identityEmpty=%d)"),
+            HandlerID, Error, *Address, Port, *Nickname, Identity.IsEmpty() ? 1 : 0);
+
         if (UTeamSpeak_AudioBridge* Bridge = UTeamSpeak_AudioBridge::getUTeamSpeak_AudioBridge())
         {
             Bridge->SetActiveConnection(0, nullptr);
@@ -277,15 +336,15 @@ void UTeamSpeak_VoiceClientComponent::OpenCaptureDevice()
         }
     }
 
+    ApplyVADConfig();
+
+    // Capture just (re)opened. If PTT is on, re-arm the gate so the next tick asserts mic-off for
+    // this fresh capture — covers a reconnect where SetPTTEnabled isn't called again and the SDK's
+    // CLIENT_INPUT_DEACTIVATED would otherwise default to "transmitting".
+    if (bPTTEnabled)
     {
-        int32 Error = 0;
-        UTeamSpeakFunctionLibrary::TeamSpeak_setPreProcessorConfigValue(
-            HandlerID, TEXT("vad"), bVADEnabled ? TEXT("true") : TEXT("false"), Error);
-        if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
-        {
-            UE_LOG(LogTeamSpeak, Warning, TEXT("setPreProcessorConfigValue(vad=%d) failed: error %d"),
-                bVADEnabled ? 1 : 0, Error);
-        }
+        bPTTKeyDown = false;
+        bPTTGateApplied = false;
     }
 
     // Voice playback runs through a custom UE device, so the SDK's default mode-match AEC pairing
@@ -503,6 +562,177 @@ void UTeamSpeak_VoiceClientComponent::SetOutputMuted(bool bMuted)
 {
     bOutputMuted = bMuted;
     SetMuteState(EAudioDirection::Output);
+}
+
+/* static */
+UTeamSpeak_VoiceClientComponent* UTeamSpeak_VoiceClientComponent::GetVoiceClientComponent(APlayerController* PlayerController)
+{
+    return PlayerController ? PlayerController->FindComponentByClass<UTeamSpeak_VoiceClientComponent>() : nullptr;
+}
+
+/* static */
+const TCHAR* UTeamSpeak_VoiceClientComponent::VADModeToConfigValue(ETeamSpeak_VADMode Mode)
+{
+    // SDK expects a NUMERIC string for vad_mode (verified live: "0"/"1"/"2" accepted, the word
+    // strings "hybrid"/"automatic"/"volume_gate" return ERROR_sound_internal_preprocessor 2305).
+    switch (Mode)
+    {
+        case ETeamSpeak_VADMode::Automatic:  return TEXT("0");
+        case ETeamSpeak_VADMode::Hybrid:     return TEXT("1");
+        case ETeamSpeak_VADMode::VolumeGate: return TEXT("2");
+        default:                             return TEXT("0");
+    }
+}
+
+void UTeamSpeak_VoiceClientComponent::ApplyVADConfig()
+{
+    // Preprocessor settings are bound to a capture device — only valid once one is open.
+    if (HandlerID == 0 || !bCaptureOpen)
+    {
+        return;
+    }
+
+    int32 Error = 0;
+    UTeamSpeakFunctionLibrary::TeamSpeak_setPreProcessorConfigValue(
+        HandlerID, TEXT("vad"), bVADEnabled ? TEXT("true") : TEXT("false"), Error);
+    if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("setPreProcessorConfigValue(vad=%d) failed: error %d"), bVADEnabled ? 1 : 0, Error);
+    }
+
+    if (!bVADEnabled)
+    {
+        return;
+    }
+
+    Error = 0;
+    UTeamSpeakFunctionLibrary::TeamSpeak_setPreProcessorConfigValue(
+        HandlerID, TEXT("vad_mode"), VADModeToConfigValue(VADMode), Error);
+    if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("setPreProcessorConfigValue(vad_mode='%s') failed: error %d — verify the SDK mode string"),
+            VADModeToConfigValue(VADMode), Error);
+    }
+
+    Error = 0;
+    UTeamSpeakFunctionLibrary::TeamSpeak_setPreProcessorConfigValue(
+        HandlerID, TEXT("voiceactivation_level"), *FString::SanitizeFloat(VADLevel), Error);
+    if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("setPreProcessorConfigValue(voiceactivation_level=%f) failed: error %d"), VADLevel, Error);
+    }
+}
+
+void UTeamSpeak_VoiceClientComponent::SetVADEnabled(bool bEnabled)
+{
+    bVADEnabled = bEnabled;
+    ApplyVADConfig();
+}
+
+void UTeamSpeak_VoiceClientComponent::SetVADMode(ETeamSpeak_VADMode Mode)
+{
+    VADMode = Mode;
+    ApplyVADConfig();
+}
+
+void UTeamSpeak_VoiceClientComponent::SetVADLevel(float Level)
+{
+    // TS6-style threshold in dB: -50 (most sensitive) .. +50 (least). Maps to SDK voiceactivation_level.
+    VADLevel = FMath::Clamp(Level, -50.f, 50.f);
+    ApplyVADConfig();
+}
+
+void UTeamSpeak_VoiceClientComponent::SetVADModeByIndex(int32 ModeIndex)
+{
+    SetVADMode(static_cast<ETeamSpeak_VADMode>(FMath::Clamp(ModeIndex, 0, 2)));
+}
+
+void UTeamSpeak_VoiceClientComponent::SetPTTEnabled(bool bEnabled)
+{
+    bPTTEnabled = bEnabled;
+    bPTTKeyDown = false;
+    // Always clear the gate flag so the tick re-asserts mic-off for the current handler. Setting it
+    // true here (the old behaviour) suppressed the tick's safety net, so a handler whose
+    // CLIENT_INPUT_DEACTIVATED was stale — e.g. carried over across a PIE stop/play, or after a
+    // reconnect — could be left transmitting until the first key press flipped it. With this false,
+    // the next tick (HandlerID != 0) forces SetPushToTalkActive(false) regardless of the carried state.
+    bPTTGateApplied = false;
+    // PTT on -> start silent (the hotkey gates transmission); PTT off -> leave the mic open.
+    SetPushToTalkActive(!bEnabled);
+    RefreshTickEnabled();
+}
+
+void UTeamSpeak_VoiceClientComponent::RefreshTickEnabled()
+{
+    // PTT polling is the only per-frame work this component does. Tick stays off until PTT is on
+    // (and stops again when it's off). While PTT is on but not yet connected the tick runs but
+    // early-returns cheaply on HandlerID == 0 — no SDK calls — until the handler comes up, at which
+    // point TickComponent asserts the initial mic-off gate.
+    SetComponentTickEnabled(bPTTEnabled);
+}
+
+float UTeamSpeak_VoiceClientComponent::GetCurrentInputLevel(int32& Error) const
+{
+    Error = 0;
+    if (HandlerID == 0 || !bCaptureOpen)
+    {
+        return 0.f;
+    }
+    return UTeamSpeakFunctionLibrary::TeamSpeak_getPreProcessorInfoValueFloat(HandlerID, TEXT("decibel_last_period"), Error);
+}
+
+bool UTeamSpeak_VoiceClientComponent::IsTalking() const
+{
+    if (HandlerID == 0)
+    {
+        return false;
+    }
+    int32 Error = 0;
+    const int32 Flag = UTeamSpeakFunctionLibrary::TeamSpeak_getClientSelfVariableAsint32(
+        HandlerID, ETeamSpeak_ClientProperties::CLIENT_FLAG_TALKING, Error);
+    return Error == static_cast<int32>(ETeamSpeak_Error::ERROR_ok) && Flag != 0;
+}
+
+void UTeamSpeak_VoiceClientComponent::SetPushToTalkActive(bool bSpeaking)
+{
+    if (HandlerID == 0)
+    {
+        return;
+    }
+
+    int32 Error = 0;
+    // CLIENT_INPUT_DEACTIVATED: 0 = transmission allowed, 1 = deactivated (local-only PTT gate).
+    UTeamSpeakFunctionLibrary::TeamSpeak_setClientSelfVariableAsint32(
+        HandlerID, ETeamSpeak_ClientProperties::CLIENT_INPUT_DEACTIVATED, bSpeaking ? 0 : 1, Error);
+    if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok))
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("PTT set CLIENT_INPUT_DEACTIVATED=%d failed on handler %d: error %d"), bSpeaking ? 0 : 1, HandlerID, Error);
+        return;
+    }
+
+    UTeamSpeakFunctionLibrary::TeamSpeak_flushClientSelfUpdates(HandlerID, FString(), Error);
+    if (Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok)
+        && Error != static_cast<int32>(ETeamSpeak_Error::ERROR_ok_no_update))
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("PTT flushClientSelfUpdates failed on handler %d: error %d"), HandlerID, Error);
+    }
+}
+
+void UTeamSpeak_VoiceClientComponent::SetPTTReleaseDelay(bool bActive, int32 DelayMs)
+{
+    // Global client config (not per-handler); no FunctionLibrary wrapper exists, call the SDK directly.
+    const auto ActiveErr = ts3client_setGlobalConfigValue("input_deactivation_delay_active", bActive ? "1" : "0");
+    if (ActiveErr != ERROR_ok)
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("setGlobalConfigValue(input_deactivation_delay_active=%d) failed: error %u"), bActive ? 1 : 0, ActiveErr);
+    }
+
+    const FString DelayStr = FString::FromInt(FMath::Max(0, DelayMs));
+    const auto DelayErr = ts3client_setGlobalConfigValue("input_deactivation_delay_ms", TCHAR_TO_UTF8(*DelayStr));
+    if (DelayErr != ERROR_ok)
+    {
+        UE_LOG(LogTeamSpeak, Warning, TEXT("setGlobalConfigValue(input_deactivation_delay_ms=%d) failed: error %u"), DelayMs, DelayErr);
+    }
 }
 
 FString UTeamSpeak_VoiceClientComponent::ResolveCaptureDeviceMode() const

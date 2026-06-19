@@ -17,7 +17,7 @@
 
 class UTeamSpeak_VoiceClientComponent;
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (DisplayName = "TeamSpeak Input Deactivation Status Update"))
 enum class ETeamSpeak_InputDeactivationStatusUpdate : uint8 {
     INPUT_ACTIVATED = 0,
     INPUT_DEACTIVATED = 1,
@@ -28,7 +28,7 @@ enum class ETeamSpeak_InputDeactivationStatusUpdate : uint8 {
 /**
  * 
  */
-UCLASS()
+UCLASS(meta = (DisplayName = "TeamSpeak Audio Bridge"))
 class TEAMSPEAK_SDK_API UTeamSpeak_AudioBridge : public UBlueprintFunctionLibrary {
     GENERATED_UCLASS_BODY()
 

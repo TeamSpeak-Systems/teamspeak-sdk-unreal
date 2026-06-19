@@ -154,6 +154,8 @@ public:
 
 	/*error handling*/
 	FTeamSpeak_valueHandler<FString> UE_TS3_SDK_getErrorMessage(int32 errorCode);
+	// "error N (human-readable message)" via ts3client_getErrorMessage, for log lines.
+	FString DescribeError(unsigned int error);
 
 	/*Interacting with the server*/
 	FTeamSpeak_valueHandler<void*> UE_TS3_SDK_startConnection(uint64 serverConnectionHandlerID, const FString& identity, const FString& ip, int32 port, const FString& nickname, const TArray<FString>& defaultChannelArray, const FString& defaultChannelPassword, const FString& serverPassword);

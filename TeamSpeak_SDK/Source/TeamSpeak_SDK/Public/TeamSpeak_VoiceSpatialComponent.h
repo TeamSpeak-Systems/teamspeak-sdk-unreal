@@ -21,7 +21,7 @@ class UTeamSpeak_SynthComponent_Client;
  * Requires the viewing client's PlayerController to host a UTeamSpeak_VoiceClientComponent
  * (the connection handler). The spatial component pulls the SDK handler from there.
  */
-UCLASS(ClassGroup = (TeamSpeak), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (TeamSpeak), meta = (BlueprintSpawnableComponent, DisplayName = "TeamSpeak Voice Spatial Component"))
 class TEAMSPEAK_SDK_API UTeamSpeak_VoiceSpatialComponent : public UActorComponent
 {
     GENERATED_BODY()

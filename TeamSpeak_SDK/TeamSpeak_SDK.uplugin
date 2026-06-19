@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 2.0,
-	"FriendlyVersion": "2.0",
+	"Version": 2.1,
+	"FriendlyVersion": "2.1",
 	"FriendlyName": "TeamSpeak Plugin",
 	"Description": "Add proven, low-latency voice communication to your Unreal project. This plugin wraps the TeamSpeak SDK for Unreal Engine 5, providing Blueprint and C++ APIs for server connections, channel and identity management, and audio routing through the engine's audio mixer.",
 	"Category": "Audio|Voice",

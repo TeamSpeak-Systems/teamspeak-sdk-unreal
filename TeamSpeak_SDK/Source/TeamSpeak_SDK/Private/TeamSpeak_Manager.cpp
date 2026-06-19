@@ -141,6 +141,7 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_createIdentity() 
 	unsigned int error;
 	char* result;
 	if ((error = ts3client_createIdentity(&result)) != ERROR_ok) {
+		UE_LOG(LogTeamSpeak, Warning, TEXT("createIdentity failed: %s"), *DescribeError(error));
 		return FTeamSpeak_valueHandler<FString>("", error);
 	}
     FString copy(result);
@@ -541,6 +542,11 @@ FTeamSpeak_valueHandler<FString> TeamSpeak_Manager::UE_TS3_SDK_getErrorMessage(i
 	FString copy(result);
 	ts3client_freeMemory(result);
 	return FTeamSpeak_valueHandler<FString>(copy, error);
+}
+
+FString TeamSpeak_Manager::DescribeError(unsigned int error) {
+	return FString::Printf(TEXT("error %u (%s)"), error,
+		*UE_TS3_SDK_getErrorMessage(static_cast<int32>(error)).getValue());
 }
 
 FTeamSpeak_valueHandler<void*> TeamSpeak_Manager::UE_TS3_SDK_startConnection(uint64 serverConnectionHandlerID, const FString& identity, const FString& ip, int32 port, const FString& nickname, const TArray<FString>& defaultChannelArray, const FString& defaultChannelPassword, const FString& serverPassword) {
